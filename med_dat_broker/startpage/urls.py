@@ -1,9 +1,15 @@
-from django.urls import path
+from django.shortcuts import redirect
+from django.urls import path, include
 from . import views
-#from ..dicom_viewer import views as dicomViews
-from dicom_viewer.views import home
+# from dicom_viewer import views as dicomViews
+
+import dicom_viewer
+
+app_dcm = 'dicom_viewer'
 
 urlpatterns = [
     path('', views.home, name='startpage-home'),
-    path('dicom/', sys, name='dicomFromStart')
+    # path('dicom/', dicomViews.home, name='dicomFromStart')
+    # redirect('dicom_viewer:dicom-home',  ,name='dicomFromStart')
+    path('dicom/', dicom_viewer.views.home, name='dicomFromStart')
 ]
