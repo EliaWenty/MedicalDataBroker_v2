@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <title>DICOM-WORKS</title>
 </head>
 <body>
-
+    {% for study in study %}
+        <h1>{{study.serie}}</h1>
+        <p> Von {{study.patient}}, Bild: {{study.picture}}</p>
+        <p> {{study.content}}</p>
+    {% endfor %}
 </body>
 </html>

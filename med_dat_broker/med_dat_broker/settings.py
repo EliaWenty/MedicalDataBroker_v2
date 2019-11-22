@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'dicom_viewer.apps.DicomViewerConfig',
     'startpage.apps.StartpageConfig',
     'django.contrib.admin',
     'django.contrib.auth',
