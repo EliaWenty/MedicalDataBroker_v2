@@ -2,4 +2,4 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def home(request):
-    return HttpResponse('<h1>Startpage works</h1>')
+    return render(request, 'startpage/home.html')
