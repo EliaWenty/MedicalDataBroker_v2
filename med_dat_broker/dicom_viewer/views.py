@@ -18,7 +18,7 @@ study = [
 
 def home(request):
     context = {
-        'study': study
+        'studies': study
     }
     return render(request, 'dicom_viewer/home.html', context)
 
