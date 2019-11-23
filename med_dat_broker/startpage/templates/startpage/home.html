@@ -27,13 +27,13 @@
           Medizinische Daten werden in der Arbeitswelt auf sehr spezifische Art und Weise gespeichert.
           Über den Medical Data Broker kann man diese Daten herunterladen.
           Auf der Seite können SchülerInnen mit den Daten arbeiten.
-
          </p>
 
         <p>
 
           <!--<a href="https://physionet.org/" class="btn btn-link btn-sm" role="button">EKG Daten</a>-->
           <input type="button" value="EKG Daten" class="btn btn-info btn-lg">
+          <a href="{% url 'ekgFromStart' %}">EKG</a>
           <!--<button type="submit" class="btn btn-link btn-sm" role="button">DICOM </button>-->
           <input type="button"  value="DICOM" class="btn btn-info btn-lg">
           <a href="{% url 'dicomFromStart' %}">DICOM</a>

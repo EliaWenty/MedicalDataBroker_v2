@@ -4,10 +4,11 @@ from . import views
 # from dicom_viewer import views as dicomViews
 
 import dicom_viewer
-
-app_dcm = 'dicom_viewer'
+import ekg_viewer
+#app_dcm = 'dicom_viewer'
 
 urlpatterns = [
     path('', views.home, name='startpage-home'),
-    path('dicom/', dicom_viewer.views.home, name='dicomFromStart')
+    path('dicom/', dicom_viewer.views.home, name='dicomFromStart'),
+    path('ekg', ekg_viewer.views.home, name='ekgFromStart')
 ]

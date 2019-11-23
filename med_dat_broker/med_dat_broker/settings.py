@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'authentification.AuthentificationConfig',
+    'ekg_viewer.apps.EkgViewerConfig',
     'dicom_viewer.apps.DicomViewerConfig',
     'startpage.apps.StartpageConfig',
     'django.contrib.admin',
