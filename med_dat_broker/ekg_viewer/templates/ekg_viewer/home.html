@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EKG-WORKS</title>
+</head>
+<body>
+    {% for dL in dataLists %}
+        <h1>{{dL.serie}}</h1>
+        <p> Von {{dL.patient}}, Bild: {{dL.picture}}</p>
+        <p> {{dL.content}}</p>
+    {% endfor %}
+</body>
+</html>

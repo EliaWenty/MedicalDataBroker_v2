@@ -19,5 +19,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dicom/', include('dicom_viewer.urls')),
+    path('ekg/', include('ekg_viewer.urls')),
     path('', include('startpage.urls')),
 ]
