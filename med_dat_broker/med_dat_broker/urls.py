@@ -20,6 +20,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dicom/', include('dicom_viewer.urls')),
     path('ekg/', include('ekg_viewer.urls')),
+    path('csv', include('csv_viewer.urls')),
     path('auth/', include('authentification.urls')),
     path('', include('startpage.urls')),
+
 ]

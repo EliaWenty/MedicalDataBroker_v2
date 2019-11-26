@@ -4,6 +4,6 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.login, name='startpage-home'),
-    path('physioNet', views.)
+    path('', views.home, name='physio-home'),
+
 ]
