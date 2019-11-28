@@ -1,15 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>CSV-WORKS</title>
-</head>
+{% extends "startpage/base.html" %}
+{% block content %}
 <body>
-<p>
-    authentification
-</p>
-<p>
+<h1>
+    Authentification
+</h1>
+<!--<p>
     <a href="{% url 'physioFromAuth' %}">AUTH</a>
 </p>
+-->
+
+<div class="container">
+
+        <div class="content-section">
+            <h4>Login</h4>
+            <br>
+              <form action="" method="post">
+                <input type="text" placeholder="Username" name="username" value="username">
+                 <input type="password" placeholder="Password" name="password" value="password">
+                <input class="btn btn-default" type="submit" value="Login">
+              </form>
+              {% if error %}
+                <p class="error"><strong>Error:</strong> {{ error }}
+              {% endif %}
+        </div>
+
+</div>
+
 </body>
-</html>
+
+{% endblock content %}
