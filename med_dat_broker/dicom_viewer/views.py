@@ -35,7 +35,7 @@ def home(request):
 def about(request):
     return HttpResponse('<h1>DCM About</h1>')
 
-
+#dicom bild darstellen
 def dicom_draw(request):
     dir=gDatadir
     dataset = pydicom.dcmread(dir +'MRBRAIN.DCM')
