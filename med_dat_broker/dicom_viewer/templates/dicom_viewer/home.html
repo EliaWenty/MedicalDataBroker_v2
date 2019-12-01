@@ -26,7 +26,11 @@
                   <div class="col" >
                     <h4>DICOM</h4>
                       <div class="row">
-                         <p>Image: <img src="{% url 'dicom_draw' %}"></p>
+                          {%for pic in pictures%}
+                            <p>Image:
+                                <img {{pic.image}}>
+                            </p>
+                          {% endfor %}
                       </div>
                   </div>
                     <div class="col">
