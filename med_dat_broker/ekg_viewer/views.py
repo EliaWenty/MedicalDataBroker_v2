@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+import io
+import wfdb
 
 dataList = [
     {
@@ -15,12 +17,23 @@ dataList = [
 
     }
 ]
-
+path = "_dataarchive/ARR_01"
 def home(request):
     context = {
         'dataLists': dataList
     }
     return render(request, 'ekg_viewer/home.html', context)
+
+#ekg darstellen
+def ekg_to_png(request):
+    record = wfdb.rdrecord(path)
+    ekgplot.plot(record.p_signal[1:1000])
+    figure = ekgplot.gcf() #get current figure
+    buffer = io.BytesIO()
+    figure.savefig(buffer, format='png')
+    buffer.seek(0)
+    image = buffer.read()
+    return HttpResponse(image, content_type="image/png")
 
 def about(request):
     return HttpResponse('<h1>EKG About</h1>')

@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import pdb
 import _dataarchive
 import os
+import wfdb
+
 
 study = [
     {
@@ -21,6 +23,11 @@ study = [
 
     }
 ]
+# define global data access path
+#gDatadir = "C:/Python37/meddata/_dataarchive/" if 'OS' in os.environ.keys() and os.environ['OS'].startswith('Windows') else "/var/www/meddata/_dataarchive/"
+path = "_dataarchive/0002"
+
+
 #dicom bild darstellen
 def dicom_to_png():
     dir=path
@@ -39,10 +46,6 @@ def dicom_to_png():
     image.append(image_data)
     pdb.set_trace()
     return HttpResponse(image, content_type="image/png")
-
-# define global data access path
-#gDatadir = "C:/Python37/meddata/_dataarchive/" if 'OS' in os.environ.keys() and os.environ['OS'].startswith('Windows') else "/var/www/meddata/_dataarchive/"
-path = "_dataarchive/0002"
 
 def home(request):
     context = {
