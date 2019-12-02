@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import io
 import wfdb #pip install wfdb
+import matplotlib.pyplot as plt
 
 dataList = [
     {
@@ -27,8 +28,8 @@ def home(request):
 #ekg darstellen
 def ekg_to_png(request):
     record = wfdb.rdrecord(path)
-    ekgplot.plot(record.p_signal[1:1000])
-    figure = ekgplot.gcf() #get current figure
+    plt.plot(record.p_signal[1:1000])
+    figure = plt.gcf() #get current figure
     buffer = io.BytesIO()
     figure.savefig(buffer, format='png')
     buffer.seek(0) #startposition offset standard ist 0 (kann in zukunft für sidescroll verwendet werden)
