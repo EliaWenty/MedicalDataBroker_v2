@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import io
-import wfdb
+import wfdb #pip install wfdb
 
 dataList = [
     {
