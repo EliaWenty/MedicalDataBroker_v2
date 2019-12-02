@@ -27,7 +27,7 @@ def home(request):
 
 #ekg darstellen
 def ekg_to_png(request):
-    record = wfdb.rdrecord(path)
+    record = wfdb.rdrecord('100', pb_dir='mitdb')
     plt.plot(record.p_signal[1:1000])
     figure = plt.gcf() #get current figure
     buffer = io.BytesIO()
