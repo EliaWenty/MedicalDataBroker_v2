@@ -31,7 +31,7 @@ def ekg_to_png(request):
     figure = ekgplot.gcf() #get current figure
     buffer = io.BytesIO()
     figure.savefig(buffer, format='png')
-    buffer.seek(0)
+    buffer.seek(0) #startposition offset standard ist 0 (kann in zukunft für sidescroll verwendet werden)
     image = buffer.read()
     return HttpResponse(image, content_type="image/png")
 
