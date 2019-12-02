@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import pdb
 import _dataarchive
 import os
-import wfdb
 
 
 study = [
