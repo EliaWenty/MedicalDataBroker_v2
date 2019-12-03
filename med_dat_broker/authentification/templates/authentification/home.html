@@ -2,7 +2,7 @@
 {% block content %}
 <body>
 <h1>
-    Authentification
+    LOGIN
 </h1>
 <!--<p>
     <a href="{% url 'physioFromAuth' %}">AUTH</a>
@@ -11,17 +11,24 @@
 
 <div class="container">
 
-        <div class="content-section">
-            <h4>Login</h4>
-            <br>
-              <form action="" method="post">
-                <input type="text" placeholder="Username" name="username" value="username">
-                 <input type="password" placeholder="Password" name="password" value="password">
-                <input class="btn btn-default" type="submit" value="Login">
-              </form>
-              {% if error %}
-                <p class="error"><strong>Error:</strong> {{ error }}
-              {% endif %}
+        <div class="content-section" >
+            <div class="container">
+                <br>
+                  <form action="" method="post">
+                      <div class="row">
+                        <input type="text" placeholder="Username" name="username" value="username">
+                      </div>
+                      <div class="row">
+                        <input type="password" placeholder="Password" name="password" value="password">
+                      </div>
+                      <div class="row">
+                        <input class="btn btn-default" type="submit" value="Login">
+                      </div>
+                  </form>
+                  {% if error %}
+                    <p class="error"><strong>Error:</strong> {{ error }}
+                  {% endif %}
+            </div>
         </div>
 
 </div>

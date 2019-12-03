@@ -2,6 +2,17 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 
+vglparameter = [
+    {
+        'name':'gewicht'
+    },
+    {
+        'name':'groesse'
+    }
+]
 def home(request):
-    return render(request, 'csv_viewer/home.html')
+    context = {
+        'Vergleichsparamter': vglparameter
+    }
+    return render(request, 'csv_viewer/home.html',context)
 
