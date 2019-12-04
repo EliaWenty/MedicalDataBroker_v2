@@ -3,6 +3,7 @@ from django.http import HttpResponse
 import io
 import wfdb #pip install wfdb
 import matplotlib.pyplot as plt
+from ekg_viewer.models import ekgModel
 
 dataList = [
     {
@@ -19,11 +20,20 @@ dataList = [
     }
 ]
 path = "_dataarchive/ARR_01"
+
 def home(request):
+
+
+    #ekgList = [f.name for f in ekgModel._meta.get_fields()]
+    #print(ekgList)
     context = {
-        'dataLists': dataList
+        'dataLists': ekgModel.objects.values('e_recordName')
     }
     return render(request, 'ekg_viewer/home.html', context)
+
+def detail(request):
+
+    return render(request, 'ekg_viewer/ekg_detail.html')
 
 #ekg darstellen
 def ekg_to_png(request):

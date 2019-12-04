@@ -43,7 +43,7 @@ def dicom_to_png():
     image_data = buf.read()
     image = []
     image.append(image_data)
-    pdb.set_trace()
+    #pdb.set_trace()
     return HttpResponse(image, content_type="image/png")
 
 def home(request):
