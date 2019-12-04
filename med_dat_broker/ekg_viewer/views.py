@@ -31,7 +31,7 @@ def home(request):
     }
     return render(request, 'ekg_viewer/home.html', context)
 
-def detail(request):
+def detail(request,value):
 
     return render(request, 'ekg_viewer/ekg_detail.html')
 

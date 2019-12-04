@@ -11,7 +11,7 @@
     <div class="container">
         {% for dL in dataLists %}
         <h1>{{dL.e_recordName}}</h1>
-
+        <a href="{% url 'ekg-detail' value=dL.e_recordName %}">detail Ansicht</a>
         {% endfor %}
     </div>
 
