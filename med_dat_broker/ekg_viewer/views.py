@@ -32,8 +32,15 @@ def home(request):
     return render(request, 'ekg_viewer/home.html', context)
 
 def detail(request,value):
-
-    return render(request, 'ekg_viewer/ekg_detail.html')
+    parameter = [
+        {
+            'recordname': value
+        }
+        ]
+    context = {
+        'list' : parameter
+    }
+    return render(request, 'ekg_viewer/ekg_detail.html', context)
 
 #ekg darstellen
 def ekg_to_png(request):
