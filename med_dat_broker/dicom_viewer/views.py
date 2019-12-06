@@ -7,7 +7,7 @@ import pdb
 import _dataarchive
 import os, glob
 import numpy as np
-
+from ekg_viewer.models import ekgModel
 
 study = [
     {
@@ -70,13 +70,25 @@ def dicom_to_png():
 
 def home(request):
     context = {
-        'studies': study,
-        #'pictures' : dicom_to_png()
+        'dataLists': ekgModel.objects.values('e_recordName')
     }
     return render(request, 'dicom_viewer/home.html', context)
 
-def about(request):
-    return HttpResponse('<h1>DCM About</h1>')
+
+
+
+
+
+def detail(request,value):
+    parameter = [
+        {
+            'recordname': value
+        }
+    ]
+    context = {
+        'list': parameter
+    }
+    return render(request, 'dicom_viewer/dicom_detail.html', context)
 
 
 
