@@ -21,7 +21,7 @@
                     <h4>EKG- Signal</h4>
                       <div class="row">
                           {% for f in list %}
-                            <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname %}"></p>
+                            <p>Image: <img src="{% url 'ekg-to-png' pk=f.id %}"></p>
                           {% endfor %}
                       </div>
                   </div>

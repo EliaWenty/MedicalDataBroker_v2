@@ -4,6 +4,7 @@ import io
 import wfdb #pip install wfdb
 import matplotlib.pyplot as plt
 from ekg_viewer.models import ekgModel
+from annoying.functions import get_object_or_None
 
 dataList = [
     {
@@ -22,19 +23,17 @@ dataList = [
 path = "_dataarchive/ARR_01"
 
 def home(request):
-
-
     #ekgList = [f.name for f in ekgModel._meta.get_fields()]
     #print(ekgList)
     context = {
-        'dataLists': ekgModel.objects.values('e_recordName')
+        'dataLists': ekgModel.objects.values('e_uuid')
     }
     return render(request, 'ekg_viewer/home.html', context)
 
 def detail(request,value):
     parameter = [
         {
-            'recordname': value
+            'id': value
         }
         ]
     context = {
@@ -43,8 +42,10 @@ def detail(request,value):
     return render(request, 'ekg_viewer/ekg_detail.html', context)
 
 #ekg darstellen
-def ekg_to_png(request,pk):
-    record = wfdb.rdrecord(pk, pb_dir='mitdb')
+def ekg_to_png(request, pk):
+
+    ekgobj = get_object_or_None(ekgModel, e_uuid = pk)
+    record = wfdb.rdrecord(ekgobj.e_recordName, pb_dir=ekgobj.e_ppDir)
     plt.plot(record.p_signal[1:1000])
     figure = plt.gcf() #get current figure
     buffer = io.BytesIO()
