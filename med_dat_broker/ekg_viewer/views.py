@@ -32,12 +32,19 @@ def home(request):
     return render(request, 'ekg_viewer/home.html', context)
 
 def detail(request,value):
-
-    return render(request, 'ekg_viewer/ekg_detail.html')
+    parameter = [
+        {
+            'recordname': value
+        }
+        ]
+    context = {
+        'list' : parameter
+    }
+    return render(request, 'ekg_viewer/ekg_detail.html', context)
 
 #ekg darstellen
-def ekg_to_png(request):
-    record = wfdb.rdrecord('100', pb_dir='mitdb')
+def ekg_to_png(request,pk):
+    record = wfdb.rdrecord(pk, pb_dir='mitdb')
     plt.plot(record.p_signal[1:1000])
     figure = plt.gcf() #get current figure
     buffer = io.BytesIO()

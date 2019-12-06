@@ -20,7 +20,9 @@
                   <div class="col" >
                     <h4>EKG- Signal</h4>
                       <div class="row">
-                         <p>Image: <img src="{% url 'ekg-to-png' %}"></p>
+                          {% for f in list %}
+                            <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname %}"></p>
+                          {% endfor %}
                       </div>
                   </div>
               </div>
