@@ -5,7 +5,8 @@ import pydicom
 import matplotlib.pyplot as plt
 import pdb
 import _dataarchive
-import os
+import os, glob
+import numpy as np
 
 
 study = [
@@ -29,13 +30,34 @@ path = "_dataarchive/0002"
 
 #dicom bild darstellen
 def dicom_to_png():
+#
     dir=path
     dataset = pydicom.dcmread(dir +'.DCM')
     # plot the image using matplotlib
-    dds=dataset.pixel_array
-    while len(dds.shape)>2: dds=dds[int(dds.shape[0]/2)]
-    plt.imshow(dds, cmap=plt.cm.bone)
+    #dds=dataset.pixel_array
+    #while len(dds.shape)>2: dds=dds[int(dds.shape[0]/2)]
+    #plt.imshow(dds, cmap=plt.cm.bone)
     # plt.show()
+    fig, ax = plt.subplots(1,1)
+
+    os.system(dir+'.DCM')
+    file= dir +'.DCM'
+    plots = []
+
+    for f in glob.glob(file):
+        pass
+        filename = f.split("/")[-1]
+        ds = pydicom.dcmread(filename)
+        pix = ds.pixel_array
+        pix = pix*1+(-1024)
+        plots.append(pix)
+
+    y = np.dstack(plots)
+
+    #tracker = IndexTracker(ax, y)
+
+    #fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
+    plt.show()
     fig = plt.gcf()
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
@@ -49,7 +71,7 @@ def dicom_to_png():
 def home(request):
     context = {
         'studies': study,
-        'pictures' : dicom_to_png()
+        #'pictures' : dicom_to_png()
     }
     return render(request, 'dicom_viewer/home.html', context)
 

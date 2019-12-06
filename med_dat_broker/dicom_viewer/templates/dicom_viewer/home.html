@@ -2,6 +2,12 @@
 {% block content %}
 <body>
 
+<div class="container">
+        {% for dL in dataLists %}
+        <h1>{{dL.e_recordName}}</h1>
+        <a href="{% url 'ekg-detail' value=dL.e_recordName %}">detail Ansicht</a>
+        {% endfor %}
+</div>
 
     <div class="container">
 
@@ -26,14 +32,11 @@
                   <div class="col" >
                     <h4>DICOM</h4>
                       <div class="row">
-                          {%for pic in pictures%}
-                            <p>Image:
-                                <img {{pic.image}}>
-                            </p>
-                          {% endfor %}
+                          <p>Image: <img src="{% url 'dicom_to_png' %}"></p>
+                          <!--{%for pic in pictures%}--><!--{% endfor %}-->
                       </div>
                   </div>
-                    <div class="col">
+                    <!--<div class="col">
                         {% for meddataset in meddatasets %}
                         <div>
                             <h2><a href="{% url 'meddataset_detail' pk=meddataset.pk %}">{{ meddataset.title }}</a></h2>
@@ -41,7 +44,7 @@
                             <p>Size: {{ meddataset.datasize }}</p>
                         </div>
                         {% endfor %}
-                    </div>
+                    </div>-->
               </div>
             </div>
             </div>
