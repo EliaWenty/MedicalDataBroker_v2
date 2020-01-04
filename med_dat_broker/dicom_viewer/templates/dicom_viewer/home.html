@@ -6,7 +6,7 @@
         {% for dL in dataLists %}
         <hr class="my-4">
         <h1 class="display-4">{{dL.e_recordName}}</h1>
-        <a href="{% url 'ekg-detail' value=dL.e_recordName %}">detail Ansicht</a>
+        <a href="{% url 'dicom-detail' value=dL.e_recordName %}">detail Ansicht</a>
         {% endfor %}
     </div>
 <!--

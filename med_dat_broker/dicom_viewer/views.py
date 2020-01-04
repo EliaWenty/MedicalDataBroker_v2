@@ -29,44 +29,18 @@ path = "_dataarchive/0002"
 
 
 #dicom bild darstellen
-def dicom_to_png():
-#
-    dir=path
-    dataset = pydicom.dcmread(dir +'.DCM')
-    # plot the image using matplotlib
-    #dds=dataset.pixel_array
-    #while len(dds.shape)>2: dds=dds[int(dds.shape[0]/2)]
-    #plt.imshow(dds, cmap=plt.cm.bone)
-    # plt.show()
-    fig, ax = plt.subplots(1,1)
-
-    os.system(dir+'.DCM')
-    file= dir +'.DCM'
-    plots = []
-
-    for f in glob.glob(file):
-        pass
-        filename = f.split("/")[-1]
-        ds = pydicom.dcmread(filename)
-        pix = ds.pixel_array
-        pix = pix*1+(-1024)
-        plots.append(pix)
-
-    y = np.dstack(plots)
-
-    #tracker = IndexTracker(ax, y)
-
-    #fig.canvas.mpl_connect('scroll_event', tracker.onscroll)
-    plt.show()
+def dicom_to_png(request):
+    dataset = pydicom.dcmread('_dataarchive/0002.DCM')
+    pxarr=dataset.pixel_array
+    while len(pxarr.shape)>2: pxarr = pxarr[int(pxarr.shape[0]/2)]
+    plt.imshow(pxarr, cmap=plt.cm.bone)
+    #plt.show()
     fig = plt.gcf()
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
     buf.seek(0)
     image_data = buf.read()
-    image = []
-    image.append(image_data)
-    #pdb.set_trace()
-    return HttpResponse(image, content_type="image/png")
+    return HttpResponse(image_data, content_type="image/png")
 
 def home(request):
     context = {
@@ -80,9 +54,32 @@ def home(request):
 
 
 def detail(request,value):
+    dataset = pydicom.dcmread('_dataarchive/0002.DCM')
+    patient_name = dataset.PatientName
+    patient_display_name = patient_name.family_name + ", " + patient_name.given_name
+    slicelocation = dataset.get('SliceLocation', "(missing)") #get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
+    pixelspacing = dataset.get('SliceLocation', "(missing)")
+    rows = dataset.get('Rows', "(missing)")
+    cols = dataset.get('Columns', "(missing)")
+    if 'PixelData' in dataset:
+        size = str(len(dataset.PixelData))+" bytes"
+    elif 'Rows' in dataset:
+        size = str(rows*cols) + "px"
+    else:
+        size = "(missing)"
     parameter = [
         {
-            'recordname': value
+            'filename': value,
+            'storagetype': dataset.SOPClassUID,
+            'studydate': dataset.StudyDate,
+            'patientid': dataset.PatientID,
+            'modality': dataset.Modality,
+            'patientdisplayname': patient_display_name,
+            'rows': rows,
+            'cols': cols,
+            'size': size,
+            'pixelspacing': pixelspacing,
+            'slicelocation': slicelocation
         }
     ]
     context = {
