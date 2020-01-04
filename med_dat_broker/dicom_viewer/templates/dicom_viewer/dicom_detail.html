@@ -12,10 +12,17 @@
                   <div class="content-section">
                       <h4>Informationen</h4>
                       <div class="col">
-                          {% for study in studies %}
-                            <h1>{{study.serie}}</h1>
-                                <p> Von {{study.patient}}, Bild: {{study.picture}}</p>
-                                <p> {{study.content}}</p>
+                          {% for f in list %}
+                            <h1>Filename: {{f.filename}}</h1>
+                                <p>Storage type.....: {{f.storagetype}}</p>
+                                <p>Patient's name...: {{f.patientdisplayname}}</p>
+                                <p>Patient id.......: {{f.patientid}}</p>
+                                <p>Modality.........: {{f.modality}}</p>
+                                <p>Study Date.......: {{f.studydate}}</p>
+                                <p>Resolution.......: {{f.rows}} x {{f.cols}}</p>
+                                <p>Image size.......: {{f.size}}</p>
+                                <p>Pixel spacing....: {{f.pixelspacing}}</p>
+                                <p>Slice location...: {{f.slicelocation}}</p>
                           {% endfor %}
                       </div>
                   </div>

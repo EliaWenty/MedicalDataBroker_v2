@@ -82,3 +82,8 @@ a.article-title:hover {
 .account-heading {
   font-size: 2.5rem;
 }
+.fixed-panel {
+  min-height: 10px;
+  max-height: 10px;
+  overflow-y: scroll;
+}

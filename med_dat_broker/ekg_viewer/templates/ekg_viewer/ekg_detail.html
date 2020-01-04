@@ -1,5 +1,5 @@
 {% extends "startpage/base.html" %}
-{% block content %}
+<!--
 <body>
     <div class="container">
       <div class="page-header">
@@ -32,5 +32,51 @@
       </div>
     </div>
 
-</body>
+</body>-->
+
+
+{% block content %}
+<form method="POST" action="update_detail/">
+{% csrf_token %}
+    {% for f in list %}
+    <div class="row">
+        <h3>EKG Signal:  </h3>
+        <h3>{{f.recordname}}</h3>
+    </div>
+    <div class="row">
+        <h6>Datum: </h6>
+        <h6>{{f.datum}}</h6>
+    </div>
+    <div class="row">
+        <h6>Uhrzeit: </h6>
+        <h6>{{f.uhrzeit}}</h6>
+    </div>
+    <div class="row">
+        <h6>Samplerate: </h6>
+        <h6>{{f.samplerate}}</h6>
+    </div>
+    <div class="row">
+        <h6>ADC-Gain: </h6>
+        <h6>{{f.adcgain}}</h6>
+    </div>
+    <div class="row">
+        <h6>Comments: </h6>
+        <h6>{{f.comments}}</h6>
+    </div>
+    {% endfor %}
+    <div class="row">
+                         <!-- {% for f in list %}
+                            {% if f.multiplier %}
+                                <h1>{{f.multiplier}}</h1>
+                                <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname multiplier=f.multiplier %}"></p>
+                            {% else %}
+                                <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname multiplier='500' %}"></p>
+                                <h1>Du stinkst</h1>
+                            {% endif %}
+                          {% endfor %}-->
+        {% autoescape off %}
+        {{plot_div}}
+        {% endautoescape %}
+    </div>
+</form>
 {% endblock content %}
