@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from csv_viewer.models import csvModel
+
+admin.site.register(csvModel)
