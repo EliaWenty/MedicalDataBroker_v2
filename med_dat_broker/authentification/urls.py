@@ -5,5 +5,5 @@ from physioNet import views as physioView
 
 urlpatterns = [
     path('', views.home, name='authentification-home'),
-    path('physio/', physioView.home, name='physioFromAuth')
+    path('admin/', physioView.home, name='physioFromAuth')
 ]

@@ -16,5 +16,5 @@ urlpatterns = [
     path('ekg/', ekg_viewer.views.home, name='ekgFromStart'),
     path('csv/', csv_viewer.views.home, name='csvFromStart'),
     path('auth/physio', physioNet.views.home, name='physioFromAuth'),
-    path('auth/',authentification.views.home, name='authFromStart')
+    #path('admin/',authentification.views.home, name='authFromStart')
 ]
