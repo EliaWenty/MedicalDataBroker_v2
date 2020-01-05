@@ -117,7 +117,7 @@ def ekg_comparison(request, value):
         })
         plot_divs.append(plot_div)
 
-
+    #context for template
     context = {
         'list': parameter
     }
