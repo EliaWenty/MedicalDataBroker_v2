@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include
 from . import views
@@ -16,5 +17,5 @@ urlpatterns = [
     path('ekg/', ekg_viewer.views.home, name='ekgFromStart'),
     path('csv/', csv_viewer.views.home, name='csvFromStart'),
     path('auth/physio', physioNet.views.home, name='physioFromAuth'),
-    #path('admin/',authentification.views.home, name='authFromStart')
+    #path('admin/', include(admin.site.urls), name='authFromStart')
 ]
