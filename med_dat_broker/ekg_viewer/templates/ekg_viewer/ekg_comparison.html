@@ -1,0 +1,24 @@
+{% extends "startpage/base.html" %}
+{% block content %}
+<div class="grid-container">
+    {% for f in list %}
+    <div class="grid-item">
+        <h3>EKG Signal:  </h3>
+        <h3>{{f.recordname}}</h3>
+        <h6>Datum: </h6>
+        <h6>{{f.datum}}</h6>
+        <h6>Uhrzeit: </h6>
+        <h6>{{f.uhrzeit}}</h6>
+        <h6>Samplerate: </h6>
+        <h6>{{f.samplerate}}</h6>
+        <h6>ADC-Gain: </h6>
+        <h6>{{f.adcgain}}</h6>
+        <h6>Comments: </h6>
+        <h6>{{f.comments}}</h6>
+        {% autoescape off %}
+        {{f.plot_div}}
+        {% endautoescape %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock content %}

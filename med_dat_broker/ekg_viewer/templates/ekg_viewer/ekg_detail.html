@@ -36,7 +36,7 @@
 
 
 {% block content %}
-<form method="POST" action="update_detail/">
+<form method="POST" action="comparison/">
 {% csrf_token %}
     {% for f in list %}
     <div class="row">
@@ -65,18 +65,14 @@
     </div>
     {% endfor %}
     <div class="row">
-                         <!-- {% for f in list %}
-                            {% if f.multiplier %}
-                                <h1>{{f.multiplier}}</h1>
-                                <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname multiplier=f.multiplier %}"></p>
-                            {% else %}
-                                <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname multiplier='500' %}"></p>
-                                <h1>Du stinkst</h1>
-                            {% endif %}
-                          {% endfor %}-->
+
         {% autoescape off %}
         {{plot_div}}
         {% endautoescape %}
+    </div>
+    <div class="row">
+        <input type="text" name="textfield">
+        <button type="submit">start comparison</button>
     </div>
 </form>
 {% endblock content %}
