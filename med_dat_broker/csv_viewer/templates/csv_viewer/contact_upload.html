@@ -7,9 +7,9 @@
 {% else %}
 {{order}}
 <form method="post" enctype="multipart/form-data">
-    {{% csrf_token %}}
+    {% csrf_token %}
     <label>Upload a file</label>
-    <input type="=file" name="file">
+    <input type="file" name="file">
     <p>NUR CSV FILE</p>
     <button type="submit">Upload</button>
 </form>

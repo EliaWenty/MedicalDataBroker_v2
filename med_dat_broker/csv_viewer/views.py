@@ -70,7 +70,7 @@ def import_csv(request):
 
 @permission_required('admin.can_add_log_entry')
 def contact_upload(request):
-    template = "contact_upload.html"
+    template = "csv_viewer/contact_upload.html"
 
     prompt = {
         'order': 'max 14 colums'
@@ -89,7 +89,7 @@ def contact_upload(request):
 
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
         _, created = csvModel.objects.update_or_create(
-            colOne=column[0],
+            c_colOne=column[0],
             c_colTwo=column[1],
             c_colThree=column[2],
             c_colFour=column[3],
