@@ -1,15 +1,17 @@
 {% extends "startpage/base.html" %}
 {% block content %}
-<form method="POST" action="comparison/">
-{% csrf_token %}
-        <h1>DICOM</h1>
+<body>
+<div class="container">
+      <div class="page-header">
+        <h1>DICOM comparison</h1>
+          {% for f in list %}
           <div class="container">
             <div class="row">
               <div class="col col-lg" >
                   <div class="content-section">
                       <h4>Informationen</h4>
                       <div class="col">
-                          {% for f in list %}
+
                             <h1>Filename: {{f.filename}}</h1>
                                 <p>Storage type.....: {{f.storagetype}}</p>
                                 <p>Patient's name...: {{f.patientdisplayname}}</p>
@@ -20,28 +22,22 @@
                                 <p>Image size.......: {{f.size}}</p>
                                 <p>Pixel spacing....: {{f.pixelspacing}}</p>
                                 <p>Slice location...: {{f.slicelocation}}</p>
-                          {% endfor %}
+
                       </div>
                   </div>
               </div>
                 <div class="col-md">
                   <div class="col" >
+                    <h4>DICOM</h4>
                       <div class="row">
                           <p>Image: <img src="{% url 'dicom_to_png' %}"></p>
                     </div>
               </div>
             </div>
-                </div>
-     <div class="row">
-         <h4>Compare this file:</h4>
-         <p>Input the names of the files you want to compare it to below and separate them with commas.</p>
-         <p>Press the button to start the comparison</p>
-        <input type="text" name="textfield">
-        <button type="submit">start comparison</button>
-    </div>
-
             </div>
           </div>
-      </form>
-
+          {% endfor %}
+      </div>
+    </div>
+</body>
 {% endblock content %}

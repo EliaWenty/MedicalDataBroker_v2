@@ -87,5 +87,41 @@ def detail(request,value):
     }
     return render(request, 'dicom_viewer/dicom_detail.html', context)
 
+def dicom_comparison(request,value):
+    value = value + ","
+    value += request.POST.get('textfield', None)
+    parameter = []
+    record_names = value.split(",")
+    for value in record_names:
+        dataset = pydicom.dcmread('_dataarchive/0002.DCM')
+        patient_name = dataset.PatientName
+        patient_display_name = patient_name.family_name + ", " + patient_name.given_name
+        slicelocation = dataset.get('SliceLocation', "(missing)") #get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
+        pixelspacing = dataset.get('SliceLocation', "(missing)")
+        rows = dataset.get('Rows', "(missing)")
+        cols = dataset.get('Columns', "(missing)")
+        if 'PixelData' in dataset:
+            size = str(len(dataset.PixelData))+" bytes"
+        elif 'Rows' in dataset:
+            size = str(rows*cols) + "px"
+        else:
+            size = "(missing)"
+        parameter.append(
+            {
+                'filename': value,
+                'storagetype': dataset.SOPClassUID,
+                'studydate': dataset.StudyDate,
+                'patientid': dataset.PatientID,
+                'modality': dataset.Modality,
+                'patientdisplayname': patient_display_name,
+                'rows': rows,
+                'cols': cols,
+                'size': size,
+                'pixelspacing': pixelspacing,
+                'slicelocation': slicelocation
+            })
 
-
+    context = {
+        'list': parameter
+    }
+    return render(request, 'dicom_viewer/dicom_comparison.html', context)

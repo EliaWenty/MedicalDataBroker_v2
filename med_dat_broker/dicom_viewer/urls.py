@@ -5,7 +5,7 @@ from . import views
 
 urlpatterns = [
     path('', views.home, name='dicom-home'),
-    path('detail/(?P<value>\d+)/$', views.detail, name='dicom-detail'),
-    #path('', views.dicom_to_png, name='dicom_to_png'),
-    path('test/', views.dicom_to_png, name='dicom_to_png')
+    path('detail/<str:value>/', views.detail, name='dicom-detail'),
+    path('draw_dicom/', views.dicom_to_png, name='dicom_to_png'),
+    path('detail/<str:value>/comparison/', views.dicom_comparison, name='dicom-comparison')
 ]
