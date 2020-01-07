@@ -1,6 +1,6 @@
 import pdb
 
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 import io
 import wfdb  # pip install wfdb
@@ -35,12 +35,14 @@ def home(request):
     # ekgList = [f.name for f in ekgModel._meta.get_fields()]
     # print(ekgList)
     context = {
-        'dataLists': ekgModel.objects.values('e_recordName')
+        'dataLists': ekgModel.objects.values('e_uuid')
     }
     return render(request, 'ekg_viewer/home.html', context)
 
 
 def detail(request, value):
+    object = get_object_or_404(ekgModel, pk = value)
+    value = object.e_recordName
     if value in last5ekgs:  # schauen ob record noch in der cache ist
         print("used record from cache")
         record = last5ekgs[value]
@@ -100,7 +102,7 @@ def update_detail(request, value):
     }
     return render(request, 'ekg_viewer/ekg_detail.html', context)
 
-
+"""
 # ekg darstellen
 def ekg_to_png(request, pk, multiplier):
     record = wfdb.rdrecord('_dataarchive/ARR_01', channels=[0])
@@ -119,7 +121,7 @@ def ekg_to_png(request, pk, multiplier):
     # fs = record.fs
     # plot_div = plot([go.Scatter(x=signal[0], y=signal[1:], mode='lines', name='test')], output_type='div')
     return HttpResponse(image, content_type="image/png")
-
+"""
 
 def about(request):
     return HttpResponse('<h1>EKG About</h1>')
