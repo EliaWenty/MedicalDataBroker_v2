@@ -1,5 +1,6 @@
+import base64
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 import io
 import pydicom
 import matplotlib.pyplot as plt
@@ -8,6 +9,7 @@ import _dataarchive
 import os, glob
 import numpy as np
 from ekg_viewer.models import ekgModel
+import cv2
 
 study = [
     {
@@ -24,23 +26,54 @@ study = [
     }
 ]
 # define global data access path
-#gDatadir = "C:/Python37/meddata/_dataarchive/" if 'OS' in os.environ.keys() and os.environ['OS'].startswith('Windows') else "/var/www/meddata/_dataarchive/"
+# gDatadir = "C:/Python37/meddata/_dataarchive/" if 'OS' in os.environ.keys() and os.environ['OS'].startswith('Windows') else "/var/www/meddata/_dataarchive/"
 path = "_dataarchive/0002"
 
 
-#dicom bild darstellen
+# dicom bild darstellen
 def dicom_to_png(request):
     dataset = pydicom.dcmread('_dataarchive/0002.DCM')
-    pxarr=dataset.pixel_array
-    while len(pxarr.shape)>2: pxarr = pxarr[int(pxarr.shape[0]/2)]
+    pxarr = dataset.pixel_array
+    while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
     plt.imshow(pxarr, cmap=plt.cm.bone)
-    #plt.show()
+    # plt.show()
     fig = plt.gcf()
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
     buf.seek(0)
     image_data = buf.read()
     return HttpResponse(image_data, content_type="image/png")
+
+
+def dicom_compare(request):
+    path0 = "_dataarchive/000.jpg"
+    path1 = "_dataarchive/001.jpg"
+    path2 = "_dataarchive/002.jpg"
+    path3 = "_dataarchive/003.jpg"
+
+    image1 = cv2.imread(path0)
+    image2 = cv2.imread(path1)
+
+    diffrence = cv2.subtract(image1, image2)
+
+    Conv_hsv_Gray = cv2.cvtColor(diffrence, cv2.COLOR_BGR2GRAY)
+    ret, mask = cv2.threshold(Conv_hsv_Gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
+    #frame_b64 = base64.b64encode(mask)
+
+    diffrence[mask != 255] = [0, 0, 255]
+    image1[mask != 255] = [0, 0, 255]
+    image2[mask != 255] = [0, 0, 255]
+
+
+    #cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
+    #cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
+    #cv2.imwrite('_dataarchive/diff.png', diffrence)
+
+
+    #images = []
+
+    #return HttpResponse(images, content_type="image/jpg")
+    return render(request, 'dicom_viewer/vergleich.html')
 
 def home(request):
     context = {
@@ -49,22 +82,19 @@ def home(request):
     return render(request, 'dicom_viewer/home.html', context)
 
 
-
-
-
-
-def detail(request,value):
+def detail(request, value):
     dataset = pydicom.dcmread('_dataarchive/0002.DCM')
     patient_name = dataset.PatientName
     patient_display_name = patient_name.family_name + ", " + patient_name.given_name
-    slicelocation = dataset.get('SliceLocation', "(missing)") #get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
+    slicelocation = dataset.get('SliceLocation',
+                                "(missing)")  # get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
     pixelspacing = dataset.get('SliceLocation', "(missing)")
     rows = dataset.get('Rows', "(missing)")
     cols = dataset.get('Columns', "(missing)")
     if 'PixelData' in dataset:
-        size = str(len(dataset.PixelData))+" bytes"
+        size = str(len(dataset.PixelData)) + " bytes"
     elif 'Rows' in dataset:
-        size = str(rows*cols) + "px"
+        size = str(rows * cols) + "px"
     else:
         size = "(missing)"
     parameter = [
@@ -87,7 +117,8 @@ def detail(request,value):
     }
     return render(request, 'dicom_viewer/dicom_detail.html', context)
 
-def dicom_comparison(request,value):
+
+def dicom_comparison(request, value):
     value = value + ","
     value += request.POST.get('textfield', None)
     parameter = []
@@ -96,14 +127,15 @@ def dicom_comparison(request,value):
         dataset = pydicom.dcmread('_dataarchive/0002.DCM')
         patient_name = dataset.PatientName
         patient_display_name = patient_name.family_name + ", " + patient_name.given_name
-        slicelocation = dataset.get('SliceLocation', "(missing)") #get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
+        slicelocation = dataset.get('SliceLocation',
+                                    "(missing)")  # get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
         pixelspacing = dataset.get('SliceLocation', "(missing)")
         rows = dataset.get('Rows', "(missing)")
         cols = dataset.get('Columns', "(missing)")
         if 'PixelData' in dataset:
-            size = str(len(dataset.PixelData))+" bytes"
+            size = str(len(dataset.PixelData)) + " bytes"
         elif 'Rows' in dataset:
-            size = str(rows*cols) + "px"
+            size = str(rows * cols) + "px"
         else:
             size = "(missing)"
         parameter.append(
