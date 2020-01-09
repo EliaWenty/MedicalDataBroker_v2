@@ -46,8 +46,8 @@ def dicom_to_png(request):
 
 
 def dicom_compare(request):
-    path0 = "_dataarchive/000.jpg"
-    path1 = "_dataarchive/001.jpg"
+    path0 = "_dataarchive/1001.jpg"
+    path1 = "_dataarchive/1002.jpg"
     path2 = "_dataarchive/002.jpg"
     path3 = "_dataarchive/003.jpg"
 
@@ -58,22 +58,30 @@ def dicom_compare(request):
 
     Conv_hsv_Gray = cv2.cvtColor(diffrence, cv2.COLOR_BGR2GRAY)
     ret, mask = cv2.threshold(Conv_hsv_Gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
-    #frame_b64 = base64.b64encode(mask)
+    # frame_b64 = base64.b64encode(mask)
 
     diffrence[mask != 255] = [0, 0, 255]
     image1[mask != 255] = [0, 0, 255]
     image2[mask != 255] = [0, 0, 255]
 
+    #maskEncode = base64.b64encode(mask)
 
-    #cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
-    #cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
-    #cv2.imwrite('_dataarchive/diff.png', diffrence)
+    #diffrenceString = diffrence.tostring()
+    buffer = cv2.imencode('.jpg', diffrence)[1].tostring()
+    #[1].tostring()
+    #pdb.set_trace()
+    #bufferString = buffer.tostring()
+    frame_b64 = base64.b64encode(buffer)
+    #pdb.set_trace()
+    cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
+    cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
+    cv2.imwrite('_dataarchive/diff.png', diffrence)
 
+    # images = []
 
-    #images = []
+    # return HttpResponse(images, content_type="image/jpg")
+    return render(request, 'dicom_viewer/vergleich.html', {'img': frame_b64})
 
-    #return HttpResponse(images, content_type="image/jpg")
-    return render(request, 'dicom_viewer/vergleich.html')
 
 def home(request):
     context = {
