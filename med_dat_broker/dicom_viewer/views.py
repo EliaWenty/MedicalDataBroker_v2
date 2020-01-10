@@ -46,6 +46,7 @@ def dicom_to_png(request):
 
 
 def dicom_compare(request):
+    pathDiff = "_dataarchive/diff.png"
     path0 = "_dataarchive/1001.jpg"
     path1 = "_dataarchive/1002.jpg"
     path2 = "_dataarchive/002.jpg"
@@ -64,23 +65,25 @@ def dicom_compare(request):
     image1[mask != 255] = [0, 0, 255]
     image2[mask != 255] = [0, 0, 255]
 
-    #maskEncode = base64.b64encode(mask)
-
-    #diffrenceString = diffrence.tostring()
-    buffer = cv2.imencode('.jpg', diffrence)[1].tostring()
-    #[1].tostring()
-    #pdb.set_trace()
-    #bufferString = buffer.tostring()
-    frame_b64 = base64.b64encode(buffer)
     #pdb.set_trace()
     cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
     cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
-    cv2.imwrite('_dataarchive/diff.png', diffrence)
+    cv2.imwrite(pathDiff, diffrence)
+
+    # maskEncode = base64.b64encode(mask)
+
+
+    #diffencoded = base64.b64encode(open(pathDiff, "rb").read())
+    buffer = cv2.imencode('.png', diffrence)[1].tostring()
+    #frame_b64 = base64.b64encode(buffer)
+    diffencoded = base64.b64encode(buffer).decode()
+    imgStr = 'data:image/png;base64,{}'.format(diffencoded)
+
 
     # images = []
-
+    print(diffencoded)
     # return HttpResponse(images, content_type="image/jpg")
-    return render(request, 'dicom_viewer/vergleich.html', {'img': frame_b64})
+    return render(request, 'dicom_viewer/vergleich.html', {'img': imgStr})
 
 
 def home(request):
