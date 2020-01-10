@@ -58,13 +58,12 @@ def dicom_to_png(request):
 
 
 def dicom_compare(request):
-    path0 = "_dataarchive/1001.jpg"
-    path1 = "_dataarchive/1002.jpg"
-    path2 = "_dataarchive/002.jpg"
-    path3 = "_dataarchive/003.jpg"
+    pathDiff = "_dataarchive/diff.png"
+    path1 = "_dataarchive/1001.jpg"
+    path2 = "_dataarchive/1002.jpg"
 
-    image1 = cv2.imread(path0)
-    image2 = cv2.imread(path1)
+    image1 = cv2.imread(path1)
+    image2 = cv2.imread(path2)
 
     diffrence = cv2.subtract(image1, image2)
 
@@ -76,22 +75,55 @@ def dicom_compare(request):
     image1[mask != 255] = [0, 0, 255]
     image2[mask != 255] = [0, 0, 255]
 
-    #maskEncode = base64.b64encode(mask)
-    #diffrenceString = diffrence.tostring()
-    ret, buffer = cv2.imencode('.png', diffrence)
-    #[1].tostring()
-    #pdb.set_trace()
-    #bufferString = buffer.tostring()
-    frame_b64 = base64.b64encode(buffer)
-    #pdb.set_trace()
-    cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
-    cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
-    cv2.imwrite('_dataarchive/diff.png', diffrence)
+    # cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
+    # cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
+    # cv2.imwrite(pathDiff, diffrence)
 
-    # images = []
+    image1OG = cv2.imread(path1)
+    image2OG = cv2.imread(path2)
 
+    images = [diffrence, image1, image2, image1OG, image2OG]
+    imagesEnc = []
+    # imageDic = {}
+    for i in range(len(images)):
+        buffer = cv2.imencode('.png', images[i])[1].tostring()
+        diffencoded = base64.b64encode(buffer).decode()
+        imgStr = 'data:image/png;base64,{}'.format(diffencoded)
+        # imageDic['id']
+        imagesEnc.append(imgStr)
+
+    imageEnc1 = imagesEnc[0]
+    imageEnc2 = imagesEnc[1]
+    imageEnc3 = imagesEnc[2]
+    imageEnc4 = imagesEnc[3]
+    imageEnc5 = imagesEnc[4]
+    #print(imageEnc5)
+    #pdb.set_trace()
+
+    imgList = [
+
+        {
+            'id': 1,
+            'img': imageEnc1,
+        }, {
+            'id': 2,
+            'img': imageEnc2,
+        }, {
+            'id': 3,
+            'img': imageEnc3,
+        }, {
+            'id': 4,
+            'img': imageEnc4,
+        }, {
+            'id': 5,
+            'img': imageEnc5,
+        },
+    ]
+    contextImg = {
+        'imgList' : imgList
+    }
     # return HttpResponse(images, content_type="image/jpg")
-    return render(request, 'dicom_viewer/vergleich.html', {'img': frame_b64})
+    return render(request, 'dicom_viewer/vergleich.html', contextImg)
 
 
 def home(request):
