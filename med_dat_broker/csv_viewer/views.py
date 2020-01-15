@@ -7,7 +7,7 @@ from django.http import HttpResponse
 import csv
 from tkinter import *
 
-from csv_viewer.models import csvModel
+from csv_viewer.models import csvModel, csvFileModel
 
 vglparameter = [
     {
@@ -87,7 +87,11 @@ def contact_upload(request):
     io_string = io.StringIO(data_set)
     next(io_string)
 
+    obj = csvModel.objects.latest('c_uuid')
+    last_row = obj.c_uuid
+    row = 1
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
+        row = row + 1
         _, created = csvModel.objects.update_or_create(
             c_colOne=column[0],
             c_colTwo=column[1],
@@ -104,5 +108,10 @@ def contact_upload(request):
             c_colThirteen=column[12],
             c_colFourteen=column[13]
         )
+    csvFileModel.objects.update_or_create(
+        f_name=request.POST['csvname'],
+        f_firstRow=last_row + 1,
+        f_lasttRow=last_row + row
+    )
     context = {}
     return render(request, template, context)

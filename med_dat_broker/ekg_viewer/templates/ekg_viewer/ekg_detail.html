@@ -21,7 +21,7 @@
                     <h4>EKG- Signal</h4>
                       <div class="row">
                           {% for f in list %}
-                            <p>Image: <img src="{% url 'ekg-to-png' pk=f.id %}"></p>
+                            <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname %}"></p>
                           {% endfor %}
                       </div>
                   </div>
@@ -40,39 +40,78 @@
 {% csrf_token %}
     {% for f in list %}
     <div class="row">
-        <h3>EKG Signal:  </h3>
+        <h3>EKG Signal: &nbsp;&nbsp; </h3>
         <h3>{{f.recordname}}</h3>
     </div>
     <div class="row">
-        <h6>Datum: </h6>
+        <h6>Datum:&nbsp;&nbsp; </h6>
         <h6>{{f.datum}}</h6>
     </div>
     <div class="row">
-        <h6>Uhrzeit: </h6>
+        <h6>Uhrzeit: &nbsp;&nbsp;</h6>
         <h6>{{f.uhrzeit}}</h6>
     </div>
     <div class="row">
-        <h6>Samplerate: </h6>
+        <h6>Number of channels:&nbsp;&nbsp; </h6>
+        <h6>{{f.channels}}</h6>
+    </div>
+    <div class="row">
+        <h6>Samplerate: &nbsp;&nbsp;</h6>
         <h6>{{f.samplerate}}</h6>
     </div>
     <div class="row">
-        <h6>ADC-Gain: </h6>
+        <h6>ADC-Gain: &nbsp;&nbsp;</h6>
         <h6>{{f.adcgain}}</h6>
     </div>
     <div class="row">
-        <h6>Comments: </h6>
+        <h6>Comments: &nbsp;&nbsp;</h6>
         <h6>{{f.comments}}</h6>
     </div>
-    {% endfor %}
     <div class="row">
-
         {% autoescape off %}
         {{plot_div}}
         {% endautoescape %}
     </div>
+    <p></p>
+    {% for r in results %}
+    <p>
+        <h4>Results for Channel {{r.channel}} </h4>
+        Puls: &nbsp;&nbsp;{{r.puls}}<br/>
+        Average time in seconds between R peaks: &nbsp;&nbsp;{{r.avgsec}}<br/>
+        Average samples between R peaks: &nbsp;&nbsp;{{r.avgsamp}}<br/>
+        Average peak value:&nbsp;&nbsp;{{r.avgr}}<br/>
+        <b>Predicted conditions:<br/></b>
+        Bradykardie: &nbsp;&nbsp;{{r.bradykardie}}<br/>
+        Tachykardie:&nbsp;&nbsp;{{r.tachykardie}}<br/>
+        Kammerflimmern:&nbsp;&nbsp;{{r.kammerflimmern}}<br/>
+        Arrythmie:&nbsp;&nbsp;{{r.arrythmie}}
+    </p>
+    {% endfor %}
+
     <div class="row">
+        <h6>Data Download:</h6>
+        <ul>
+            <li><a href="{% url 'ekg_download' format='csv' value=recordname %}">CSV </a></li>
+            <li><a href="{% url 'ekg_download' format='ssv' value=recordname %}">Semicol.SV </a></li>
+            <li><a href="{% url 'ekg_download' format='tsv' value=recordname %}">Tab-separated values </a></li>
+            <li><a href="{% url 'ekg_download' format='json' value=recordname %}">JSON </a></li>
+            <li><a href="{% url 'ekg_download' format='xml' value=recordname %}">XML </a></li>
+            <li><a href="{% url 'ekg_download' format='smoothed' value=recordname %}">Smoothed data</a></li>
+        </ul>
+    </div>
+    <p></p>
+    <h1></h1>
+    <div class="row">
+        <div class="row">
+            <h4>Compare this file:</h4>
+            <p>Input the names of the files you want to compare it to below and separate them with commas.<br/>
+                Press the button to start the comparison
+            </p>
+        </div>
         <input type="text" name="textfield">
         <button type="submit">start comparison</button>
     </div>
+    <p></p>
+    {% endfor %}
 </form>
 {% endblock content %}

@@ -18,7 +18,44 @@
         {% autoescape off %}
         {{f.plot_div}}
         {% endautoescape %}
+        {% for r in f.results %}
+        <p>
+        <h4>Results for Channel {{r.channel}} </h4>
+        Puls: &nbsp;&nbsp;{{r.puls}}<br/>
+        Average time in seconds between R peaks: &nbsp;&nbsp;{{r.avgsec}}<br/>
+        Average samples between R peaks: &nbsp;&nbsp;{{r.avgsamp}}<br/>
+        Average peak value:&nbsp;&nbsp;{{r.avgr}}<br/>
+        <b>Predicted conditions:<br/></b>
+        Bradykardie: &nbsp;&nbsp;{{r.bradykardie}}<br/>
+        Tachykardie:&nbsp;&nbsp;{{r.tachykardie}}<br/>
+        Kammerflimmern:&nbsp;&nbsp;{{r.kammerflimmern}}<br/>
+        Arrythmie:&nbsp;&nbsp;{{r.arrythmie}}
+        </p>
+        {% endfor %}
     </div>
     {% endfor %}
+    <div class="grid-item">
+        <h3>Results of comparison:</h3>
+        <h6>Progression of pulse sorted by channel:</h6>
+        {% for p in puls_progression %}
+        <h6>{{p}}</h6>
+        {% endfor %}
+        <h6>Channels with symptoms of arrythmia sorted by record:</h6>
+        {% for c in arrchannels %}
+        <h6>{{c}}</h6>
+        {% endfor %}
+        <h6>Channels with symptoms of tachycardia sorted by record:</h6>
+        {% for c in tachychannels %}
+        <h6>{{c}}</h6>
+        {% endfor %}
+        <h6>Channels with symptoms of bradycardia sorted by record:</h6>
+        {% for c in bradychannels %}
+        <h6>{{c}}</h6>
+        {% endfor %}
+        <h6>Channels with symptoms of ventricular fibrillation sorted by record:</h6>
+        {% for c in flimmerchannels %}
+        <h6>{{c}}</h6>
+        {% endfor %}
+    </div>
 </div>
 {% endblock content %}

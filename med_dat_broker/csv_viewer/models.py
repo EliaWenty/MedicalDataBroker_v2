@@ -4,6 +4,15 @@ from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 
 
+class csvFileModel(models.Model):
+    f_uuid = models.AutoField(primary_key=True)
+    f_name = models.CharField(max_length=50)
+    f_firstRow = models.IntegerField(max_length=20)
+    f_lasttRow = models.IntegerField(max_length=20)
+
+    def __str__(self):
+        return f'{self.pk}'
+
 class csvModel(models.Model):
     c_uuid = models.AutoField(primary_key=True)
     c_colOne = models.CharField(max_length=50)

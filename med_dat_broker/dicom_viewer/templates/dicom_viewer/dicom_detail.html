@@ -1,10 +1,7 @@
 {% extends "startpage/base.html" %}
 {% block content %}
-<body>
-<div class="container">
-
-
-      <div class="page-header">
+<form method="POST" action="comparison/">
+{% csrf_token %}
         <h1>DICOM</h1>
           <div class="container">
             <div class="row">
@@ -29,15 +26,22 @@
               </div>
                 <div class="col-md">
                   <div class="col" >
-                    <h4>DICOM</h4>
                       <div class="row">
-                          <p>Image: <img src="{% url 'dicom-to-png' %}"></p>
+                          <p>Image: <img src="{% url 'dicom_to_png' %}"></p>
                     </div>
               </div>
             </div>
+                </div>
+     <div class="row">
+         <h4>Compare this file:</h4>
+         <p>Input the names of the files you want to compare it to below and separate them with commas.</p>
+         <p>Press the button to start the comparison</p>
+        <input type="text" name="textfield">
+        <button type="submit">start comparison</button>
+    </div>
+
             </div>
           </div>
-      </div>
-    </div>
-</body>
+      </form>
+
 {% endblock content %}
