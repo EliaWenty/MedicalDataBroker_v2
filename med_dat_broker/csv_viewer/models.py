@@ -29,8 +29,30 @@ class csvModel(models.Model):
     c_colTwelve = models.CharField(max_length=50)
     c_colThirteen = models.CharField(max_length=50)
     c_colFourteen = models.CharField(max_length=50)
+    c_parameter = models.CharField(max_length=200)
 
     # e_ppDir = models.CharField(max_length=50)
+    def rowvalues(self):
+        rowvalue=[]
+        rowvalue.append(self.c_colOne)
+        rowvalue.append(self.c_colTwo)
+        rowvalue.append(self.c_colThree)
+        rowvalue.append(self.c_colFour)
+        rowvalue.append(self.c_colFive)
+        rowvalue.append(self.c_colSix)
+        rowvalue.append(self.c_colSeven)
+        rowvalue.append(self.c_colEight)
+        rowvalue.append(self.c_colNine)
+        rowvalue.append(self.c_colTen)
+        rowvalue.append(self.c_colEleven)
+        rowvalue.append(self.c_colTwelve)
+        rowvalue.append(self.c_colThirteen)
+        rowvalue.append(self.c_colFourteen)
+        return rowvalue
 
     def __str__(self):
         return f'{self.pk}'
+
+    def get_parameter(self):
+        return csvModel.c_parameter
+

@@ -1,0 +1,24 @@
+{% extends "startpage/base.html" %}
+{% block content %}
+<body>
+<!--
+    {% for dL in dataLists %}
+        <h1>{{dL.serie}}</h1>
+        <p> Von {{dL.patient}}, Bild: {{dL.picture}}</p>
+        <p> {{dL.content}}</p>
+    {% endfor %}
+-->
+    <div class="jumbotron jumbotron-fluid" type="content">
+        <h2 class="mx-auto">CSV- Einträge</h2>
+        {% for name in names %}
+        <hr class="my-4">
+        <h5 class="display-4" >{{name.f_name}}</h5>
+        {% endfor %}
+        {% for dL in dataLists%}
+        <a href="{% url 'csv-detail' value=dL.f_uuid %}">detail Ansicht</a>
+        {% endfor %}
+    </div>
+    <a href="{% url 'contact_upload'%}"> upload csv</a>
+<!--ekg start einträge-->
+</body>
+{% endblock content %}
