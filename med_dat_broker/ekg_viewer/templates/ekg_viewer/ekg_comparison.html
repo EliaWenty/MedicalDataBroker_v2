@@ -57,5 +57,11 @@
         <h6>{{c}}</h6>
         {% endfor %}
     </div>
+    <div class="row">
+        <h6>Data Download:</h6>
+        <ul>
+            <li><a href="{% url 'ekg_pdf_download' value=pks %}">Download page as pdf </a></li>
+        </ul>
+    </div>
 </div>
 {% endblock content %}

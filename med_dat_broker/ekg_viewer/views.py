@@ -10,6 +10,7 @@ from ekg_viewer.models import ekgModel
 import plotly.graph_objs as go
 import pandas as pd
 import numpy as np
+from ekg_viewer.utils import render_to_pdf
 
 EKGSINCACHE = 5
 MAXSAMP = 7500
@@ -88,6 +89,7 @@ def ekg_comparison(request, value):
     value = object.e_recordName
     value = value + ","
     value += request.POST.get('textfield', None)
+    pks = value
     dir = object.e_ppDir
     parameter = []
     record_names = value.split(",")
@@ -128,7 +130,7 @@ def ekg_comparison(request, value):
             for j in range(len(y_values)):
                 y_y_values.append(y_values[j][c])
             traces.append(go.Scatter(x=x_values, y=y_y_values, mode='lines', name='channel ' + str(c)))
-            d=process_data(y_y_values, header.fs, c)
+            d = process_data(y_y_values, header.fs, c)
             results.append(d)
             if c in puls_progression:
                 puls_progression[c] = puls_progression[c] +" => "+str(d['puls'])+ " (in Record "+value+")"
@@ -182,12 +184,13 @@ def ekg_comparison(request, value):
         'arrchannels': arrchannels_flip,
         'tachychannels': tachychannels_flip,
         'bradychannels': bradychannels_flip,
-        'flimmerchannels': flimmerchannels_flip
+        'flimmerchannels': flimmerchannels_flip,
+        'pks': pks
     }
     return render(request, 'ekg_viewer/ekg_comparison.html', context)
 
 
-def ekg_download(request, value, format='json'):
+def ekg_download(request, value, format = 'json'):
     object = get_object_or_404(ekgModel, pk=value)
     value = object.e_recordName
     dir = object.e_ppDir
@@ -280,3 +283,104 @@ def process_data(y_values, samplerate, channel):
 
 def avg(lst):
     return sum(lst) / len(lst)
+
+def generate_pdf(request, value):
+    pks = value
+    parameter = []
+    record_names = value.split(",")
+    arrchannels = {}
+    tachychannels = {}
+    bradychannels = {}
+    flimmerchannels = {}
+    puls_progression = {}
+    puls_progression_flip = {}
+    arrchannels_flip = {}
+    tachychannels_flip = {}
+    bradychannels_flip = {}
+    flimmerchannels_flip = {}
+    for value in record_names:
+        if value in last5ekgs:  # schauen ob record noch in der cache ist
+            print("used record from cache")
+            record = last5ekgs[value]
+        else:
+            record = wfdb.rdrecord(record_name=value, pb_dir="mitdb", sampto=MAXSAMP)  # record von physionet laden
+        if len(last5ekgs) >= EKGSINCACHE:  # wenn mehr als 5 records in der cache sind wird sie geleert
+            last5ekgs.clear()
+        last5ekgs[value] = record  # record in die cache speichern
+        header = wfdb.rdheader(record_name=value, pb_dir="mitdb")
+        signal = record.p_signal
+        x_values = []
+        y_values = []
+        y_y_values = []
+        traces = []
+        results = []
+        for i in range(len(signal)):  # x values erstellen
+            x_values.append(i)
+
+        for i in range(len(signal)):  # y_values aus signal entpacken
+            y_values.append(signal[i])
+        channels = len(y_values[0])
+        for c in range(channels):  # für jeden Channel des Signals einen Scatterplot erstellen
+            y_y_values.clear()
+            for j in range(len(y_values)):
+                y_y_values.append(y_values[j][c])
+            traces.append(go.Scatter(x=x_values, y=y_y_values, mode='lines', name='channel ' + str(c)))
+            d = process_data(y_y_values, header.fs, c)
+            results.append(d)
+            if c in puls_progression:
+                puls_progression[c] = puls_progression[c] + " => " + str(d['puls']) + " (in Record " + value + ")"
+            else:
+                puls_progression[c] = "Channel " + str(c) + ": " + str(d['puls']) + " (in Record " + value + ")"
+            if d['tachykardie'] == 'true':
+                if value in tachychannels:
+                    tachychannels[value] = tachychannels[value] + ", Channel " + str(c)
+                else:
+                    tachychannels[value] = "Record " + value + ": " + "Channel " + str(c)
+            if d['bradykardie'] == 'true':
+                if value in bradychannels:
+                    bradychannels[value] = bradychannels[value] + ", Channel " + str(c)
+                else:
+                    bradychannels[value] = "Record " + value + ": " + "Channel " + str(c)
+            if d['kammerflimmern'] == 'true':
+                if value in flimmerchannels:
+                    flimmerchannels[value] = flimmerchannels[value] + ", Channel " + str(c)
+                else:
+                    flimmerchannels[value] = "Record " + value + ": " + "Channel " + str(c)
+            if d['arrythmie'] == 'true':
+                if value in arrchannels:
+                    arrchannels[value] = arrchannels[value] + ", Channel " + str(c)
+                else:
+                    arrchannels[value] = "Record " + value + ": " + "Channel " + str(c)
+        plot_div = plot(traces, output_type='div')
+
+        parameter.append({
+            'recordname': value,
+            'comments': header.comments,
+            'samplerate': header.fs,
+            'datum': header.base_date,
+            'uhrzeit': header.base_time,
+            'adcgain': header.adc_gain,
+            'plot_div': plot_div,
+            'results': results
+        })
+    for c in puls_progression:
+        puls_progression_flip[puls_progression[c]] = c
+    for c in tachychannels:
+        tachychannels_flip[tachychannels[c]] = c
+    for c in bradychannels:
+        bradychannels_flip[bradychannels[c]] = c
+    for c in arrchannels:
+        arrchannels_flip[arrchannels[c]] = c
+    for c in flimmerchannels:
+        flimmerchannels_flip[flimmerchannels[c]] = c
+    context = {
+        'list': parameter,
+        'puls_progression': puls_progression_flip,
+        'arrchannels': arrchannels_flip,
+        'tachychannels': tachychannels_flip,
+        'bradychannels': bradychannels_flip,
+        'flimmerchannels': flimmerchannels_flip,
+        'pks': pks
+    }
+    pdf = render_to_pdf('ekg_viewer/ekg_comparison.html', context)
+    return HttpResponse(pdf, content_type='application/pdf')
