@@ -9,6 +9,8 @@ class csvFileModel(models.Model):
     f_name = models.CharField(max_length=50)
     f_firstRow = models.IntegerField(max_length=20)
     f_lasttRow = models.IntegerField(max_length=20)
+    c_parameter = models.CharField(max_length=200)
+
 
     def __str__(self):
         return f'{self.pk}'
@@ -31,6 +33,27 @@ class csvModel(models.Model):
     c_colFourteen = models.CharField(max_length=50)
 
     # e_ppDir = models.CharField(max_length=50)
+    def rowvalues(self):
+        rowvalue=[]
+        rowvalue.append(self.c_colOne)
+        rowvalue.append(self.c_colTwo)
+        rowvalue.append(self.c_colThree)
+        rowvalue.append(self.c_colFour)
+        rowvalue.append(self.c_colFive)
+        rowvalue.append(self.c_colSix)
+        rowvalue.append(self.c_colSeven)
+        rowvalue.append(self.c_colEight)
+        rowvalue.append(self.c_colNine)
+        rowvalue.append(self.c_colTen)
+        rowvalue.append(self.c_colEleven)
+        rowvalue.append(self.c_colTwelve)
+        rowvalue.append(self.c_colThirteen)
+        rowvalue.append(self.c_colFourteen)
+        return rowvalue
 
     def __str__(self):
         return f'{self.pk}'
+
+    def get_parameter(self):
+        return csvModel.c_parameter
+

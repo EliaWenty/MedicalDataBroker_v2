@@ -4,12 +4,11 @@
 <div class="container">
     <div class="page-header">
         <h1>CSV</h1>
-        <h2>lala</h2>
-        <a href="{% url 'contact_upload'%}"> upload csv</a>
+
         <div class="container">
             <div class="row">
-                <div class="col col-lg">
-                    <div class="content-section">
+                <div class="col ">
+                    <div class="content-section" >
                         <h4>CSV-Import</h4>
                         <a href="{% url 'import_csv'  %}">detail Ansicht</a>
                         <div class="col">
@@ -18,8 +17,8 @@
                                 </div>
                                 <div class="panel-body fixed-panel">
                                     <!--<ul  class="list-group">-->
-                                    {% for parameter in Vergleichsparamter %}
-                                    <li class="list-group-item fixed-panel">{{parameter}}</li>
+                                    {% for vglparameter in parameter %}
+                                    <li class="list-group-item fixed-panel">{{vglparameter}}</li>
                                     {% endfor %}
                                     <!--</ul>-->
                                 </div>
@@ -28,7 +27,7 @@
 
                         </div>
                         <div class="col">
-                            <div class="input-group">
+                            <!--<div class="input-group">
                                 <div class="input-group-prepend">
                                     <div class="input-group-text" id="btnGroupAddon">Datensatz</div>
                                 </div>
@@ -36,7 +35,7 @@
                                        placeholder="Input CSV File"
                                        id="path"
                                        aria-label="Input group example" aria-describedby="btnGroupAddon">
-                            </div>
+                            </div>-->
                             <!--<script>
                                 document.getElementById(
                                     "path").onchange = function () {
@@ -56,22 +55,27 @@
                     <div class="col">
                         <h4>Vergleich</h4>
                         <div class="row">
-                            <table class="table">
-                                <thead>
+                            <table id='tb1' style="width:100%; border-collapse: collapse;" class="table-bordered">
                                 <tr>
-                                    {% for parameter in Vergleichsparamter %}
-                                    <th scope="col">{{parameter}}</th>
+                                    <thead>
+                                    {%for vglparameter in parameter %}
+                                    <th>{{vglparameter}}</th>
+                                    {% endfor %}
+                                    </thead>
+                                </tr>
+                                <tbody id='tb' class="table-striped">
+                                {%for data in value%}
+                                <tr>
+                                    {% for x in data %}
+                                    <td>{{ x }}</td>
                                     {% endfor %}
                                 </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    {% for data in value %}
-                                    <th scope="row"></th>
-                                    <td>{{data}}</td>
-                                    {% endfor %}
-                                </tr>
+                                {%endfor%}
+                                <!--<td style="border: 1px solid #666666;padding:2px;">
+                                    <td scope="rowgroup">
 
+                                    </td>
+                                </td>-->
                                 </tbody>
                             </table>
                         </div>
