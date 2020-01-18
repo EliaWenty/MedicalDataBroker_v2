@@ -20,7 +20,6 @@
                                 <p>Image size.......: {{f.size}}</p>
                                 <p>Pixel spacing....: {{f.pixelspacing}}</p>
                                 <p>Slice location...: {{f.slicelocation}}</p>
-                          {% endfor %}
                       </div>
                   </div>
               </div>
@@ -31,7 +30,14 @@
                     </div>
               </div>
             </div>
+            </div>
+              <div class="row">
+                    <h6>Image Download:</h6>
+                        <ul>
+                            <li><a href="{% url 'dicom_download' format='png' value=f.filename %}">PNG </a></li>
+                        </ul>
                 </div>
+                {% endfor %}
      <div class="row">
          <h4>Compare this file:</h4>
          <p>Input the names of the files you want to compare it to below and separate them with commas.</p>

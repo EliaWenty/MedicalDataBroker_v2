@@ -31,6 +31,7 @@ class csvModel(models.Model):
     c_colTwelve = models.CharField(max_length=50)
     c_colThirteen = models.CharField(max_length=50)
     c_colFourteen = models.CharField(max_length=50)
+    c_parameter = models.CharField(max_length=200)
 
     # e_ppDir = models.CharField(max_length=50)
     def rowvalues(self):

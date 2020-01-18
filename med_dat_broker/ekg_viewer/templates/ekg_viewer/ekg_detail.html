@@ -91,12 +91,12 @@
     <div class="row">
         <h6>Data Download:</h6>
         <ul>
-            <li><a href="{% url 'ekg_download' format='csv' value=recordname %}">CSV </a></li>
-            <li><a href="{% url 'ekg_download' format='ssv' value=recordname %}">Semicol.SV </a></li>
-            <li><a href="{% url 'ekg_download' format='tsv' value=recordname %}">Tab-separated values </a></li>
-            <li><a href="{% url 'ekg_download' format='json' value=recordname %}">JSON </a></li>
-            <li><a href="{% url 'ekg_download' format='xml' value=recordname %}">XML </a></li>
-            <li><a href="{% url 'ekg_download' format='smoothed' value=recordname %}">Smoothed data</a></li>
+            <li><a href="{% url 'ekg_download' format='csv' value=pk %}">CSV </a></li>
+            <li><a href="{% url 'ekg_download' format='ssv' value=pk %}">Semicol.SV </a></li>
+            <li><a href="{% url 'ekg_download' format='tsv' value=pk %}">Tab-separated values </a></li>
+            <li><a href="{% url 'ekg_download' format='json' value=pk %}">JSON </a></li>
+            <!--<li><a href="{% url 'ekg_download' format='xml' value=pk %}">XML </a></li>-->
+            <li><a href="{% url 'ekg_download' format='smoothed' value=pk %}">Smoothed data</a></li>
         </ul>
     </div>
     <p></p>
