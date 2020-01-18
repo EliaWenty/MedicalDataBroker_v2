@@ -3,6 +3,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.contrib.auth.models import User
 
+#dicom model
 class dcmModel(models.Model):
     d_uuid = models.AutoField(primary_key=True)
     d_patientuid = models.CharField(max_length=300)
