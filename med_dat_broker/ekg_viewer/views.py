@@ -129,7 +129,7 @@ def ekg_comparison(request, value):
             for j in range(len(y_values)):
                 y_y_values.append(y_values[j][c])
             traces.append(go.Scatter(x=x_values, y=y_y_values, mode='lines', name='channel ' + str(c)))
-            d=process_data(y_y_values, header.fs, c)
+            d = process_data(y_y_values, header.fs, c)
             results.append(d)
             if c in puls_progression:
                 puls_progression[c] = puls_progression[c] +" => "+str(d['puls'])+ " (in Record "+value+")"
