@@ -1,3 +1,4 @@
+import pdb
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
@@ -30,19 +31,17 @@ def home(request):
 
 
 def detail(request, value):
-    pk = value
-    object = get_object_or_404(ekgModel, pk=pk)
+    object = get_object_or_404(ekgModel, pk=value)
     value = object.e_recordName
-    dir = object.e_ppDir
     if value in last5ekgs:  # schauen ob record noch in der cache ist
         print("used record from cache")
         record = last5ekgs[value]
     else:
-        record = wfdb.rdrecord(record_name=value, pb_dir=dir, sampto=MAXSAMP)  # record von physionet laden
+        record = wfdb.rdrecord(record_name=value, pb_dir='mitdb', sampto=MAXSAMP)  # record von physionet laden
     if len(last5ekgs) >= EKGSINCACHE:  # wenn mehr als 5 records in der cache sind wird sie geleert
         last5ekgs.clear()
     last5ekgs[value] = record  # record in die cache speichern
-    header = wfdb.rdheader(record_name=value, pb_dir=dir)
+    header = wfdb.rdheader(record_name=value, pb_dir='mitdb')
     signal = record.p_signal
     x_values = []
     y_values = []
@@ -130,7 +129,7 @@ def ekg_comparison(request, value):
             for j in range(len(y_values)):
                 y_y_values.append(y_values[j][c])
             traces.append(go.Scatter(x=x_values, y=y_y_values, mode='lines', name='channel ' + str(c)))
-            d = process_data(y_y_values, header.fs, c)
+            d=process_data(y_y_values, header.fs, c)
             results.append(d)
             if c in puls_progression:
                 puls_progression[c] = puls_progression[c] +" => "+str(d['puls'])+ " (in Record "+value+")"
