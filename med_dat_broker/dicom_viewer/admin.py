@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from dicom_viewer.models import dcmModel
+
+admin.site.register(dcmModel)
