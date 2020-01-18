@@ -31,17 +31,19 @@ def home(request):
 
 
 def detail(request, value):
-    object = get_object_or_404(ekgModel, pk=value)
+    pk = value
+    object = get_object_or_404(ekgModel, pk=pk)
     value = object.e_recordName
+    dir = object.e_ppDir
     if value in last5ekgs:  # schauen ob record noch in der cache ist
         print("used record from cache")
         record = last5ekgs[value]
     else:
-        record = wfdb.rdrecord(record_name=value, pb_dir='mitdb', sampto=MAXSAMP)  # record von physionet laden
+        record = wfdb.rdrecord(record_name=value, pb_dir=dir, sampto=MAXSAMP)  # record von physionet laden
     if len(last5ekgs) >= EKGSINCACHE:  # wenn mehr als 5 records in der cache sind wird sie geleert
         last5ekgs.clear()
     last5ekgs[value] = record  # record in die cache speichern
-    header = wfdb.rdheader(record_name=value, pb_dir='mitdb')
+    header = wfdb.rdheader(record_name=value, pb_dir=dir)
     signal = record.p_signal
     x_values = []
     y_values = []
