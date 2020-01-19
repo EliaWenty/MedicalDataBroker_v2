@@ -1,14 +1,16 @@
 import base64
 import io
+import pdb
 
 import cv2
 import matplotlib.pyplot as plt
 import pydicom
-from PIL import Image
+from PIL import Image, ImageEnhance
 from django.http import HttpResponse
 from django.shortcuts import render
 from pydicom._storage_sopclass_uids import CTImageStorage
 from pydicom.dataset import Dataset
+import numpy as np
 
 from pynetdicom import (
     AE, evt, build_role,
@@ -134,7 +136,7 @@ def home(request):
 
 
 def detail(request, value):
-    try:
+   # try:
         dataset = dicom_retrieve(0, 0, 0, 0, '0002') #insert model fields
         patient_name = dataset.PatientName
         patient_display_name = patient_name.family_name + ", " + patient_name.given_name
@@ -142,6 +144,41 @@ def detail(request, value):
         pixelspacing = dataset.get('SliceLocation', "(missing)")
         rows = dataset.get('Rows', "(missing)")
         cols = dataset.get('Columns', "(missing)")
+
+        pxarr = dataset.pixel_array
+        while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
+        plt.imshow(pxarr, cmap=plt.cm.bone)
+        fig = plt.gcf()
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png')
+        buf.seek(0)
+        image_data = buf.read()
+
+        img = Image.open(io.BytesIO(image_data))
+        imgContrast = Image.open(io.BytesIO(image_data))
+        enhancer = ImageEnhance.Contrast(imgContrast)
+        enh_imgContrastArr = []
+        contrasValArr = []
+        for i in range(-6, 6):
+            contrasValArr.append(i/2)
+            enh_imgContrastArr.append(enhancer.enhance(i/2))
+
+
+        imgStrArr = []
+        for i in range(len(enh_imgContrastArr)):
+            imgNPArr = np.array(enh_imgContrastArr[i])
+            buffer = cv2.imencode('.png', imgNPArr)[1].tostring()
+            imgdecoded = base64.b64encode(buffer).decode()
+            imgStr = 'data:image/png;base64,{}'.format(imgdecoded)
+            imgStrArr.append(imgStr)
+
+
+        imgNPArr = np.array(img)
+        buffer = cv2.imencode('.png', imgNPArr)[1].tostring()
+        imgdecoded = base64.b64encode(buffer).decode()
+        imgStrpng = 'data:image/png;base64,{}'.format(imgdecoded)
+
+
         if 'PixelData' in dataset:
             size = str(len(dataset.PixelData)) + " bytes"
         elif 'Rows' in dataset:
@@ -163,12 +200,26 @@ def detail(request, value):
                 'slicelocation': slicelocation
                 }
             ]
+        images = [
+            {
+                'image' : imgStrpng
+            }
+        ]
+        contrast_images = [
+        ]
+        for i in range(len(imgStrArr)):
+            contrast_images.append({'values' : contrasValArr[i-1],
+                                    'pic': imgStrArr[i-1]})
+
         context = {
-            'list': parameter
+            'list': parameter,
+            'list_img' : images,
+            'list_con_img' : contrast_images
         }
+
         return render(request, 'dicom_viewer/dicom_detail.html', context)
-    except:
-        return HttpResponse("Could not retrieve DICOM", content_type="text/plain")
+    #except:
+        #return HttpResponse("Could not retrieve DICOM", content_type="text/plain")
 
 
 def dicom_comparison(request, value):
