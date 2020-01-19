@@ -10,11 +10,9 @@
 -->
     <div class="jumbotron jumbotron-fluid" type="content">
         <h2 class="mx-auto">CSV- Einträge</h2>
-        {% for name in names %}
-        <hr class="my-4">
-        <h5 class="display-4" >{{name.f_name}}</h5>
-        {% endfor %}
-        {% for dL in dataLists%}
+
+        {% for dL in dataLists%} <hr class="my-4">
+        <h5 class="display-4" >{{dL.f_uuid}}</h5>
         <a href="{% url 'csv-detail' value=dL.f_uuid %}">detail Ansicht</a>
         {% endfor %}
     </div>

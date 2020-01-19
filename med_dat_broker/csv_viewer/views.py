@@ -8,6 +8,14 @@ from django.http import HttpResponse
 from random import randint
 import time
 
+
+
+from selenium.webdriver.support.select import Select
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 import csv
 from tkinter import *
 
@@ -64,11 +72,65 @@ def detail(request, value):
         data.append(list[:len(listLen)])
 
 
+    #dropdown selected ITEM
+    # is_param = 'selectedparameter' in request.POST and request.POST['selectedparameter']
+    # obj= Select(is_param)
+    # obj.select_by_index()
+    # value = request.POST['parameter']
+    #selected_para = request.POST.get('parameter_list')
+    # print(value)
+
+    allColVal = []
+    for column in range(len(data[0])):
+        columnVal = []
+        for row in range(len(data)):
+            rowVal = data[row]
+            columnVal.append(rowVal[column])
+        allColVal.append(columnVal)
+    addAll = 0
+
+    durchschnitte = []
+    for i in range(len(allColVal)):
+        col = allColVal[i]
+        colOut = col[2:]
+        for j in range(1,len(col)):
+            addAll = addAll + round(float(col[j]), 2)
+            mean = addAll / (len(col) -1)
+        durchschnitte.append({'name':col[0],
+                                  'avg': round(mean, 2),
+                                  'max': max(colOut),
+                                  'min': min(colOut)})
+    plt.style.use('seaborn')
+    np.random.seed(1)
+    mu, sigma = 170, 8
+    x = mu + sigma * np.random.randn(10000)
+
+    plt.hist(x, 100, normed=True, alpha=0.75)
+    plt.axis([140, 200, 0, 0.06])
+
+    plt.xlabel('Körpergröße')
+    plt.ylabel('Wahrscheinlichkeit')
+    plt.title('Normalverteilung von Körpergrößen')
+    plt.text(150, 0.05, r'$\mu=170,\ \sigma=8$')
+
+    #plt.savefig('csvauswertung.png')
+
     context = {
         'value': data,
+        'parameter':model.c_parameter.split(','),
+        'auswertung': durchschnitte
     }
     return render(request, 'csv_viewer/home.html', context)
 
+def selectParam(request,value):
+    model = get_object_or_404(csvFileModel, f_uuid=value)
+    select_param= model.values_list('c_parameter', flat=True)
+    param = request.POST.get('parameter_list')
+    print('TRIGGER')
+    context = {
+        #'selectedParam': param,
+    }
+    return render('csv_viewer/home.html', context)
 
 # def datasource():
 #    master = Tk()
