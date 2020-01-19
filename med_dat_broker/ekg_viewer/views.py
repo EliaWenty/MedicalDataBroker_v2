@@ -1,5 +1,7 @@
 import pdb
-
+import base64
+import cv2
+from PIL import Image
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 import io
@@ -86,14 +88,11 @@ def detail(request, value):
 
 
 def ekg_comparison(request, value):
-    object = get_object_or_404(ekgModel, pk=value)
-    value = object.e_recordName
     value = value + ","
     value += request.POST.get('textfield', None)
     pks = value
-    dir = object.e_ppDir
     parameter = []
-    record_names = value.split(",")
+    uuids = value.split(",")
     arrchannels = {}
     tachychannels = {}
     bradychannels = {}
@@ -104,16 +103,18 @@ def ekg_comparison(request, value):
     tachychannels_flip = {}
     bradychannels_flip = {}
     flimmerchannels_flip = {}
-    for value in record_names:
+    for value in uuids:
         if value in last5ekgs:  # schauen ob record noch in der cache ist
             print("used record from cache")
             record = last5ekgs[value]
         else:
-            record = wfdb.rdrecord(record_name=value, pb_dir=dir, sampto=MAXSAMP)  # record von physionet laden
+            ekgobject= get_object_or_404(ekgModel, pk=value)
+            record = wfdb.rdrecord(record_name=ekgobject.e_recordName, pb_dir=ekgobject.e_ppDir, sampto=MAXSAMP)  # record von physionet laden
         if len(last5ekgs) >= EKGSINCACHE:  # wenn mehr als 5 records in der cache sind wird sie geleert
             last5ekgs.clear()
         last5ekgs[value] = record  # record in die cache speichern
-        header = wfdb.rdheader(record_name=value, pb_dir=dir)
+        ekgobject = get_object_or_404(ekgModel, pk=value)
+        header = wfdb.rdheader(record_name=ekgobject.e_recordName, pb_dir=ekgobject.e_ppDir)
         signal = record.p_signal
         x_values = []
         y_values = []
@@ -288,7 +289,7 @@ def avg(lst):
 def generate_pdf(request, value):
     pks = value
     parameter = []
-    record_names = value.split(",")
+    uuids = value.split(",")
     arrchannels = {}
     tachychannels = {}
     bradychannels = {}
@@ -299,22 +300,36 @@ def generate_pdf(request, value):
     tachychannels_flip = {}
     bradychannels_flip = {}
     flimmerchannels_flip = {}
-    for value in record_names:
+    for value in uuids:
         if value in last5ekgs:  # schauen ob record noch in der cache ist
             print("used record from cache")
             record = last5ekgs[value]
         else:
-            record = wfdb.rdrecord(record_name=value, pb_dir="mitdb", sampto=MAXSAMP)  # record von physionet laden
+            ekgobject = get_object_or_404(ekgModel, pk=value)
+            record = wfdb.rdrecord(record_name=ekgobject.e_recordName, pb_dir=ekgobject.e_ppDir, sampto=MAXSAMP)  # record von physionet laden
         if len(last5ekgs) >= EKGSINCACHE:  # wenn mehr als 5 records in der cache sind wird sie geleert
             last5ekgs.clear()
         last5ekgs[value] = record  # record in die cache speichern
-        header = wfdb.rdheader(record_name=value, pb_dir="mitdb")
+        ekgobject = get_object_or_404(ekgModel, pk=value)
+        header = wfdb.rdheader(record_name=ekgobject.e_recordName, pb_dir=ekgobject.e_ppDir)
         signal = record.p_signal
         x_values = []
         y_values = []
         y_y_values = []
         traces = []
         results = []
+        plt.plot(record.p_signal[1:1000])
+        fig = plt.gcf()
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png')
+        buf.seek(0)
+        image_data = buf.read()
+        img = Image.open(io.BytesIO(image_data))
+        # img.save("_dataarchive/0002.jpg", "JPEG")
+        image = np.array(img)
+        buffer = cv2.imencode('.png', image)[1].tostring()
+        diffencoded = base64.b64encode(buffer).decode()
+        imgStr = 'data:image/png;base64,{}'.format(diffencoded)
         for i in range(len(signal)):  # x values erstellen
             x_values.append(i)
 
@@ -361,7 +376,7 @@ def generate_pdf(request, value):
             'datum': header.base_date,
             'uhrzeit': header.base_time,
             'adcgain': header.adc_gain,
-            'plot_div': plot_div,
+            'image': imgStr,
             'results': results
         })
     for c in puls_progression:
@@ -383,5 +398,5 @@ def generate_pdf(request, value):
         'flimmerchannels': flimmerchannels_flip,
         'pks': pks
     }
-    pdf = render_to_pdf('ekg_viewer/ekg_comparison.html', context)
+    pdf = render_to_pdf('ekg_viewer/ekg_comparison_for_pdf.html', context)
     return HttpResponse(pdf, content_type='application/pdf')

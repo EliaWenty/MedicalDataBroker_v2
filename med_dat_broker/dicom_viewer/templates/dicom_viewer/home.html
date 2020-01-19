@@ -2,11 +2,11 @@
 {% block content %}
 <body>
 <div class="jumbotron jumbotron-fluid" type="content">
-        <h4 class="mx-auto">DICOM- Einträge</h4>
+        <h4 class="mx-auto">DICOM-Einträge</h4>
         {% for dL in dataLists %}
         <hr class="my-4">
-        <h1 class="display-4">{{dL.e_recordName}}</h1>
-        <a href="{% url 'dicom-detail' value=dL.e_recordName %}">detail Ansicht</a>
+        <h1 class="display-4">{{dL.d_uuid}}</h1>
+        <a href="{% url 'dicom-detail' value=dL.d_uuid %}">detail Ansicht</a>
         {% endfor %}
     </div>
 <!--
@@ -33,7 +33,7 @@
                   <div class="col" >
                     <h4>DICOM</h4>
                       <div class="row">
-                          <p>Image: <img src="{% url 'dicom_to_png' %}"></p>
+
                           {%for pic in pictures%}--><!--{% endfor %}
                       </div>
                   </div>
