@@ -50,103 +50,22 @@ def detail(request, value):
     model = get_object_or_404(csvFileModel, f_uuid=value)
     lastrow = model.f_lasttRow
     firstRow = model.f_firstRow
-    # lastrow=csvFileModel.objects.values_list('f_lasttRow',flat=True)
-    # firstRow = csvFileModel.objects.values_list('f_firstRow' ,flat=True)
-    # object = get_object_or_404(csvFileModel,pk=value)
-    # value = object.f_name
-    # datalist = get_object_or_404(csvModel,pk= object)
-    # uuids=[]
-    # data=[]
-    colOneval = []
-    colTwoval = []
-    colThreeval = []
-    colFourval = []
-    colFiveval = []
-    colSixval = []
-    colSevenval = []
-    colEightval = []
-    colNineval = []
-    colTenval = []
-    colElevenval = []
-    colTwelveval = []
-    colThirteenval = []
-    colFourteenval = []
+    listLen = []
+    listFirstRow = model.c_parameter.split(',')
+    for i in range(len(listFirstRow)):
+        if listFirstRow[i] != ' 0':
+            listLen.append(i)
 
-    # obj= csvModel.objects.values_list('c_uuid',flat=True)
-    files = csvFileModel.objects.values_list('f_uuid', flat=True)
-    filemodels = len(files)
-    print(filemodels)
-    # for x in range(filemodels):
-    listFirstRow = firstRow.split(',')
-    for i in listFirstRow:
-        if listFirstRow[i] == 0:
-            anzColumns = i -1
-        else:
-            anzColumns = 14
     data = []
-    datavalues = []
+    list = []
     for i in range(firstRow, lastrow):
         csvmodel = get_object_or_404(csvModel, c_uuid=i)
-        if csvmodel.c_colOne != 0:
-            colOneval.append(csvmodel.c_colOne)
-        if csvmodel.c_colTwo != 0:
-            colTwoval.append(csvmodel.c_colTwo)
-        if csvmodel.c_colThree != 0:
-            colThreeval.append(csvmodel.c_colThree)
-        if csvmodel.c_colFour != 0:
-            colFourval.append(csvmodel.c_colFour)
-        if csvmodel.c_colFive != 0:
-            colFiveval.append(csvmodel.c_colFive)
-        if csvmodel.c_colSix != 0:
-            colSixval.append(csvmodel.c_colSix)
-        if csvmodel.c_colSeven != 0:
-            colSevenval.append(csvmodel.c_colSeven)
-        if csvmodel.c_colEight != 0:
-            colEightval.append(csvmodel.c_colEight)
-        if csvmodel.c_colNine != 0:
-            colNineval.append(csvmodel.c_colNine)
-        if csvmodel.c_colTen != 0:
-            colTenval.append(csvmodel.c_colTen)
-        if csvmodel.c_colEleven != 0:
-            colElevenval.append(csvmodel.c_colEleven)
-        if csvmodel.c_colTwelve != 0:
-            colTwelveval.append(csvmodel.c_colTwelve)
-        if csvmodel.c_colThirteen != 0:
-            colThirteenval.append(csvmodel.c_colThirteen)
-        if csvmodel.c_colFourteen != 0:
-            colFourteenval.append(csvmodel.c_colFourteen)
+        list = csvmodel.rowvalues()
+        data.append(list[:len(listLen)])
 
-        data.append(csvmodel.rowvalues())
-    for c in range(len(data)):
-        for p in range(len(data[c])):
-            datavalues.append(0)
-    # Tabellenausgabe der Datensätze
-    # data = [d.strip() for d in data]
-    # data= [f"<tr><td>{d}</tr>" for d in data if d.strip() != ""]
-    # vglparameter= csvmodel.c_parameter
-    # data = "<table border=1>" + "".join(data) + "</table>"
-    # data.append(colOneval)
-    # data.append(colTwoval)
-    # data.append(colThreeval)
-    # data.append(colFourval)
-    # data.append(colFiveval)
-    # data.append(colSixval)
-    # data.append(colSevenval)
-    # data.append(colEightval)
-    # data.append(colNineval)
-    # data.append(colTenval)
-    # data.append(colElevenval)
-    # data.append(colTwelveval)
-    # data.append(colThirteenval)
-    # data.append(colFourteenval)
-    # for ids in values:
-    # data=get_object_or_404(csvModel,pk=ids)
-    # datalist.append(data)
-    # ids=ids+1
+
     context = {
         'value': data,
-        # 'parameter': vglparameter
-        # 'csvname': ,
     }
     return render(request, 'csv_viewer/home.html', context)
 

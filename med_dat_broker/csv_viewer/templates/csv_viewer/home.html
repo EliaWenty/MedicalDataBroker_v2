@@ -64,13 +64,16 @@
                                     </thead>
                                 </tr>
                                 <tbody id='tb' class="table-striped">
+                                {% for len in listLen%}
+                                    <p>{{ len }}</p>
+                                {% endfor %}
                                 {%for data in value%}
                                 <tr>
+
                                     {% for x in data %}
-
                                         <td>{{ x }}</td>
-
                                     {% endfor %}
+
                                 </tr>
                                 {%endfor%}
                                 </tbody>
