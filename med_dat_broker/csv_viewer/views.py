@@ -90,6 +90,7 @@ def detail(request, value):
     addAll = 0
 
     durchschnitte = []
+
     for i in range(len(allColVal)):
         col = allColVal[i]
         colOut = col[2:]
@@ -100,6 +101,7 @@ def detail(request, value):
                                   'avg': round(mean, 2),
                                   'max': max(colOut),
                                   'min': min(colOut)})
+        '''
     plt.style.use('seaborn')
     np.random.seed(1)
     mu, sigma = 170, 8
@@ -112,7 +114,7 @@ def detail(request, value):
     plt.ylabel('Wahrscheinlichkeit')
     plt.title('Normalverteilung von Körpergrößen')
     plt.text(150, 0.05, r'$\mu=170,\ \sigma=8$')
-
+    '''
     #plt.savefig('csvauswertung.png')
 
     context = {

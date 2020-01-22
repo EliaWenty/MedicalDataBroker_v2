@@ -8,9 +8,8 @@
         <div class="container">
             <div class="row">
                 <div class="col ">
-                    <div class="content-section">
+                    <!--<div class="content-section">
                         <h4>CSV-Import</h4>
-                        <!--<a href="{% url 'import_csv'  %}">detail Ansicht</a>-->
                         <div class="col">
                             <div class="dropdown">
                                 <form action="detail/<str:value>/" method="POST">{%csrf_token%}</form>
@@ -24,33 +23,13 @@
                                 </select>
                             </div>
                             <div class="col">
-                                <!--<div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <div class="input-group-text" id="btnGroupAddon">Datensatz</div>
-                                    </div>
-                                    <input onchange="pathChange(path)" type="text" class="form-control"
-                                           placeholder="Input CSV File"
-                                           id="path"
-                                           aria-label="Input group example" aria-describedby="btnGroupAddon">
-                                </div>-->
-                                <!--<script>
-                                    document.getElementById(
-                                        "path").onchange = function () {
-                                        GFGfun()
-                                    };
 
-                                    function GFGfun() {
-                                        var x = document.getElementById("path");
-                                        x.value = x.value.toLowerCase();
-                                        Console.write(x.value)
-                                    }
-                                </script>-->
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                     <div class="col-md">
                         <div class="col">
-                            <h4>Vergleich</h4>
+                            <h4>Table:</h4>
                             <div class="row">
                                 <table id='tb1' style="width:100%; border-collapse: collapse;" class="table-bordered">
 
