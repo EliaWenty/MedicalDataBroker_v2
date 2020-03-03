@@ -30,7 +30,6 @@ PACS_AE = "DCM4CHEE"
 QUERYRETRIEVELEVEL = 'IMAGE'
 LOCALARCHIVE = "_dataarchive/"
 
-
 # dicom bild in png umwandeln
 '''def dicom_to_png(request):
     dataset = dicom_retrieve(0, 0, 0, 0, '0002') #insert model fields
@@ -46,6 +45,7 @@ LOCALARCHIVE = "_dataarchive/"
     return HttpResponse(image_data, content_type="image/png")
 '''
 
+
 def home(request):
     context = {
         'dataLists': dcmModel.objects.values('d_uuid')
@@ -55,90 +55,87 @@ def home(request):
 
 def detail(request, value):
     dcmobject = get_object_or_404(dcmModel, pk=value)
-    try:
-        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
-        patient_name = dataset.PatientName
-        patient_display_name = patient_name.family_name + ", " + patient_name.given_name
-        slicelocation = dataset.get('SliceLocation', "(missing)")  # get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
-        pixelspacing = dataset.get('SliceLocation', "(missing)")
-        rows = dataset.get('Rows', "(missing)")
-        cols = dataset.get('Columns', "(missing)")
 
-        pxarr = dataset.pixel_array
-        while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
-        plt.imshow(pxarr, cmap=plt.cm.bone)
-        fig = plt.gcf()
-        buf = io.BytesIO()
-        fig.savefig(buf, format='png')
-        buf.seek(0)
-        image_data = buf.read()
+    dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid,
+                             dcmobject.d_sopinstanceuid)
+    patient_name = dataset.PatientName
+    patient_display_name = patient_name.family_name + ", " + patient_name.given_name
+    slicelocation = dataset.get('SliceLocation',
+                                "(missing)")  # get verwenden wenn mann nicht sicher ist ob der wert befüllt ist und man einen ersatz haben will
+    pixelspacing = dataset.get('SliceLocation', "(missing)")
+    rows = dataset.get('Rows', "(missing)")
+    cols = dataset.get('Columns', "(missing)")
 
-        img = Image.open(io.BytesIO(image_data))
-        imgContrast = Image.open(io.BytesIO(image_data))
-        enhancer = ImageEnhance.Contrast(imgContrast)
-        enh_imgContrastArr = []
-        contrasValArr = []
-        for i in range(-6, 6):
-            contrasValArr.append(i/2)
-            enh_imgContrastArr.append(enhancer.enhance(i/2))
+    pxarr = dataset.pixel_array
+    while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
+    plt.imshow(pxarr, cmap=plt.cm.bone)
+    fig = plt.gcf()
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png')
+    buf.seek(0)
+    image_data = buf.read()
 
+    img = Image.open(io.BytesIO(image_data))
+    imgContrast = Image.open(io.BytesIO(image_data))
+    enhancer = ImageEnhance.Contrast(imgContrast)
+    enh_imgContrastArr = []
+    contrasValArr = []
+    for i in range(-6, 6):
+        contrasValArr.append(i / 2)
+        enh_imgContrastArr.append(enhancer.enhance(i / 2))
 
-        imgStrArr = []
-        for i in range(len(enh_imgContrastArr)):
-            imgNPArr = np.array(enh_imgContrastArr[i])
-            buffer = cv2.imencode('.png', imgNPArr)[1].tostring()
-            imgdecoded = base64.b64encode(buffer).decode()
-            imgStr = 'data:image/png;base64,{}'.format(imgdecoded)
-            imgStrArr.append(imgStr)
-
-
-        imgNPArr = np.array(img)
+    imgStrArr = []
+    for i in range(len(enh_imgContrastArr)):
+        imgNPArr = np.array(enh_imgContrastArr[i])
         buffer = cv2.imencode('.png', imgNPArr)[1].tostring()
         imgdecoded = base64.b64encode(buffer).decode()
-        imgStrpng = 'data:image/png;base64,{}'.format(imgdecoded)
+        imgStr = 'data:image/png;base64,{}'.format(imgdecoded)
+        imgStrArr.append(imgStr)
 
+    imgNPArr = np.array(img)
+    buffer = cv2.imencode('.png', imgNPArr)[1].tostring()
+    imgdecoded = base64.b64encode(buffer).decode()
+    imgStrpng = 'data:image/png;base64,{}'.format(imgdecoded)
 
-        if 'PixelData' in dataset:
-            size = str(len(dataset.PixelData)) + " bytes"
-        elif 'Rows' in dataset:
-            size = str(rows * cols) + "px"
-        else:
-            size = "(missing)"
-        parameter = [
-            {
-                'filename': value,
-                'storagetype': dataset.SOPClassUID,
-                'studydate': dataset.StudyDate,
-                'patientid': dataset.PatientID,
-                'modality': dataset.Modality,
-                'patientdisplayname': patient_display_name,
-                'rows': rows,
-                'cols': cols,
-                'size': size,
-                'pixelspacing': pixelspacing,
-                'slicelocation': slicelocation
-                }
-            ]
-        images = [
-            {
-                'image' : imgStrpng
-            }
-        ]
-        contrast_images = [
-        ]
-        for i in range(len(imgStrArr)):
-            contrast_images.append({'values' : contrasValArr[i-1],
-                                    'pic': imgStrArr[i-1]})
-
-        context = {
-            'list': parameter,
-            'list_img' : images,
-            'list_con_img' : contrast_images
+    if 'PixelData' in dataset:
+        size = str(len(dataset.PixelData)) + " bytes"
+    elif 'Rows' in dataset:
+        size = str(rows * cols) + "px"
+    else:
+        size = "(missing)"
+    parameter = [
+        {
+            'filename': value,
+            'storagetype': dataset.SOPClassUID,
+            'studydate': dataset.StudyDate,
+            'patientid': dataset.PatientID,
+            'modality': dataset.Modality,
+            'patientdisplayname': patient_display_name,
+            'rows': rows,
+            'cols': cols,
+            'size': size,
+            'pixelspacing': pixelspacing,
+            'slicelocation': slicelocation
         }
+    ]
+    images = [
+        {
+            'image': imgStrpng
+        }
+    ]
+    contrast_images = [
+    ]
+    for i in range(len(imgStrArr)):
+        contrast_images.append({'values': contrasValArr[i - 1],
+                                'pic': imgStrArr[i - 1]})
 
-        return render(request, 'dicom_viewer/dicom_detail.html', context)
-    except:
-        return HttpResponse("Could not retrieve DICOM", content_type="text/plain")
+    context = {
+        'list': parameter,
+        'list_img': images,
+        'list_con_img': contrast_images
+    }
+
+    return render(request, 'dicom_viewer/dicom_detail.html', context)
 
 
 def dicom_comparison(request, value):
@@ -151,7 +148,8 @@ def dicom_comparison(request, value):
     image_OG_arr = []
     for value in record_names:
         dcmobject = get_object_or_404(dcmModel, pk=value)
-        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
+        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid,
+                                 dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
         pxarr = dataset.pixel_array
         while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
         plt.imshow(pxarr, cmap=plt.cm.bone)
@@ -162,16 +160,16 @@ def dicom_comparison(request, value):
         buf.seek(0)
         image_data = buf.read()
         img = Image.open(io.BytesIO(image_data))
-        #img.save("_dataarchive/0002.jpg", "JPEG")
+        # img.save("_dataarchive/0002.jpg", "JPEG")
         image_arr.append(np.array(img))
         image_OG_arr.append(np.array(img))
-        #iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
+        # iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
 
-    #pathDiff = "_dataarchive/diff.png"
-    #path1 = "_dataarchive/0002.png"
+    # pathDiff = "_dataarchive/diff.png"
+    # path1 = "_dataarchive/0002.png"
     path2 = "_dataarchive/0003.jpg"
     image1OG = image_OG_arr[0]
-    #image2OG = image_arr[1]
+    # image2OG = image_arr[1]
     image1 = image_arr[0]
     image2 = image_arr[1]
 
@@ -179,15 +177,15 @@ def dicom_comparison(request, value):
     img2Grey = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
 
     diffrenceGR = cv2.subtract(img1Grey, img2Grey)
-    #diffrence = cv2.subtract(image1, image2)
-    #Conv_hsv_Gray = cv2.cvtColor(diffrence, cv2.COLOR_BGR2GRAY)
-    #blur = cv2.GaussianBlur(diffrenceGR,(5, 5), 0)
-    #ret, mask = cv2.threshold(diffrenceGR, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    #mask = cv2.adaptiveThreshold(diffrenceGR, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    #frame_b64 = base64.b64encode(mask)
-    #diffrence[mask != 255] = [0, 0, 255]
-    image1[diffrenceGR >27] = [0, 0, 255]
-    #image2[mask != 255] = [0, 0, 255]
+    # diffrence = cv2.subtract(image1, image2)
+    # Conv_hsv_Gray = cv2.cvtColor(diffrence, cv2.COLOR_BGR2GRAY)
+    # blur = cv2.GaussianBlur(diffrenceGR,(5, 5), 0)
+    # ret, mask = cv2.threshold(diffrenceGR, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    # mask = cv2.adaptiveThreshold(diffrenceGR, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    # frame_b64 = base64.b64encode(mask)
+    # diffrence[mask != 255] = [0, 0, 255]
+    image1[diffrenceGR > 27] = [0, 0, 255]
+    # image2[mask != 255] = [0, 0, 255]
 
     # cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
     # cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
@@ -207,7 +205,7 @@ def dicom_comparison(request, value):
     imageEnc2 = imagesEnc[1]
     imageEnc3 = imagesEnc[2]
     imageEnc4 = imagesEnc[3]
-    #imageEnc5 = imagesEnc[4]
+    # imageEnc5 = imagesEnc[4]
     # print(imageEnc5)
 
     imgList = [
@@ -228,7 +226,7 @@ def dicom_comparison(request, value):
     ]
     contextImg = {
         'imgList': imgList,
-        'pks':pks
+        'pks': pks
     }
     # return HttpResponse(images, content_type="image/jpg")
     return render(request, 'dicom_viewer/vergleich.html', contextImg)
@@ -274,7 +272,8 @@ def dicom_comparison(request, value):
 def dicom_download(request, value, format='png'):
     if format == 'png':
         dcmobject = get_object_or_404(dcmModel, pk=value)
-        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
+        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid,
+                                 dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
         rows = dataset.get('Rows', "(missing)")
         cols = dataset.get('Columns', "(missing)")
         pxarr = dataset.pixel_array
@@ -294,12 +293,11 @@ def dicom_download(request, value, format='png'):
         return HttpResponse("Format not supported!", content_type="text/plain")
 
 
-
 def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
     dataset = "null"
-    #check if file in local directory
+    # check if file in local directory
     try:
-        dataset = pydicom.dcmread(LOCALARCHIVE+sopinstanceuid+".DCM")
+        dataset = pydicom.dcmread(LOCALARCHIVE + sopinstanceuid + ".DCM")
     except:
         # Implement the handler for evt.EVT_C_STORE
         def handle_store(event):
@@ -322,7 +320,7 @@ def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
             ds.is_little_endian = context.transfer_syntax.is_little_endian
             ds.is_implicit_VR = context.transfer_syntax.is_implicit_VR
 
-            #keep the dataset to return later
+            # keep the dataset to return later
             dataset = ds
 
         handlers = [(evt.EVT_C_STORE, handle_store)]
@@ -331,7 +329,7 @@ def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
         ae = AE()
 
         # Add the requested presentation contexts (QR SCU)
-        ae.add_requested_context('1.2.840.10008.5.1.4.1.2.1.3') #Patient get
+        ae.add_requested_context('1.2.840.10008.5.1.4.1.2.1.3')  # Patient get
         # Add the requested presentation context (Storage SCP)
         ae.add_requested_context(CTImageStorage)
 
@@ -375,6 +373,7 @@ def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
             print('Association rejected, aborted or never connected')
     return dataset
 
+
 def dicom_pdf(request, value):
     pks = value
     record_names = value.split(",")
@@ -383,7 +382,8 @@ def dicom_pdf(request, value):
     image_OG_arr = []
     for value in record_names:
         dcmobject = get_object_or_404(dcmModel, pk=value)
-        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
+        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid,
+                                 dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
         pxarr = dataset.pixel_array
         while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
         plt.imshow(pxarr, cmap=plt.cm.bone)
@@ -394,16 +394,16 @@ def dicom_pdf(request, value):
         buf.seek(0)
         image_data = buf.read()
         img = Image.open(io.BytesIO(image_data))
-        #img.save("_dataarchive/0002.jpg", "JPEG")
+        # img.save("_dataarchive/0002.jpg", "JPEG")
         image_arr.append(np.array(img))
         image_OG_arr.append(np.array(img))
-        #iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
+        # iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
 
-    #pathDiff = "_dataarchive/diff.png"
-    #path1 = "_dataarchive/0002.png"
+    # pathDiff = "_dataarchive/diff.png"
+    # path1 = "_dataarchive/0002.png"
     path2 = "_dataarchive/0003.jpg"
     image1OG = image_OG_arr[0]
-    #image2OG = image_arr[1]
+    # image2OG = image_arr[1]
     image1 = image_arr[0]
     image2 = image_arr[1]
 
@@ -411,15 +411,15 @@ def dicom_pdf(request, value):
     img2Grey = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
 
     diffrenceGR = cv2.subtract(img1Grey, img2Grey)
-    #diffrence = cv2.subtract(image1, image2)
-    #Conv_hsv_Gray = cv2.cvtColor(diffrence, cv2.COLOR_BGR2GRAY)
-    #blur = cv2.GaussianBlur(diffrenceGR,(5, 5), 0)
-    #ret, mask = cv2.threshold(diffrenceGR, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
-    #mask = cv2.adaptiveThreshold(diffrenceGR, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-    #frame_b64 = base64.b64encode(mask)
-    #diffrence[mask != 255] = [0, 0, 255]
-    image1[diffrenceGR >27] = [0, 0, 255]
-    #image2[mask != 255] = [0, 0, 255]
+    # diffrence = cv2.subtract(image1, image2)
+    # Conv_hsv_Gray = cv2.cvtColor(diffrence, cv2.COLOR_BGR2GRAY)
+    # blur = cv2.GaussianBlur(diffrenceGR,(5, 5), 0)
+    # ret, mask = cv2.threshold(diffrenceGR, 127, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+    # mask = cv2.adaptiveThreshold(diffrenceGR, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    # frame_b64 = base64.b64encode(mask)
+    # diffrence[mask != 255] = [0, 0, 255]
+    image1[diffrenceGR > 27] = [0, 0, 255]
+    # image2[mask != 255] = [0, 0, 255]
 
     # cv2.imwrite('_dataarchive/diffOverImage1.png', image1)
     # cv2.imwrite('_dataarchive/diffOverImage2.png', image2)
@@ -439,7 +439,7 @@ def dicom_pdf(request, value):
     imageEnc2 = imagesEnc[1]
     imageEnc3 = imagesEnc[2]
     imageEnc4 = imagesEnc[3]
-    #imageEnc5 = imagesEnc[4]
+    # imageEnc5 = imagesEnc[4]
     # print(imageEnc5)
 
     imgList = [
