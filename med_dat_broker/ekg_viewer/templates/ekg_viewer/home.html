@@ -8,14 +8,16 @@
         <p> {{dL.content}}</p>
     {% endfor %}
 -->
-    <div class="jumbotron jumbotron-fluid" type="content">
-        <h4 class="mx-auto">EKG- Einträge</h4>
+<div class="jumbotron jumbotron-fluid" type="content">
+    <h4 class="mx-auto">EKG- Einträge</h4>
+    <ul>
         {% for dL in dataLists %}
         <hr class="my-4">
-        <h1 class="display-4">{{dL.e_uuid}}</h1>
-        <a href="{% url 'ekg-detail' value=dL.e_uuid %}">detail Ansicht</a>
+        <a href="{% url 'ekg-detail' value=dL.e_uuid %}" class="display-4">EKG Nr.{{dL.e_recordName}}</a>
+        <p>From {{dL.e_ppDir}}</p>
         {% endfor %}
-    </div>
+    </ul>
+</div>
 <!--ekg start einträge-->
 </body>
 {% endblock content %}

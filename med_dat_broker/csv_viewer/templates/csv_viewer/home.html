@@ -1,65 +1,60 @@
 {% extends "startpage/base.html" %}
 {% block content %}
-<body>
-<div class="container">
-    <div class="page-header">
-        <h1>CSV</h1>
-
-        <div class="container">
-            <div class="row">
-                <div class="col ">
-                    <!--<div class="content-section">
-                        <h4>CSV-Import</h4>
-                        <div class="col">
-                            <div class="dropdown">
-                                <form action="detail/<str:value>/" method="POST">{%csrf_token%}</form>
-                                <select id="org" name="parameter_list" onChange="selectParam()">
-                                    <option value="" selected="selected">---SELECT Vergleichsparameter---</option>
-                                    {% for vglparameter in parameter %}
-                                    <option name="selectedparameter" value="{{csvFileModel.c_parameter}}">
-                                        {{vglparameter}}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+<form method="POST" action="auswertung/">
+    <body>
+    <div class="container">
+        <div class="page-header">
+            <h1>CSV</h1>
+            <div class="container">
+                <div class="row">
+                    <div class="col ">
+                        <div class="content-section">
+                            <h4>CSV-Import</h4>
                             <div class="col">
-
-                            </div>-->
-                        </div>
-                    </div>
-                    <div class="col-md">
-                        <div class="col">
-                            <h4>Table:</h4>
-                            <div class="row">
-                                <table id='tb1' style="width:100%; border-collapse: collapse;" class="table-bordered">
-
-                                    <tbody id='tb' class="table-striped">
-                                    {%for data in value%}
-                                    <tr>
-                                        {% for x in data %}
-                                        <td>{{ x }}</td>
-                                        {% endfor %}
-                                    </tr>
-                                    {%endfor%}
-                                    </tbody>
-                                </table>
+                                <!--
+                                <div class="dropdown">
+                                    <form method="POST"> {%csrf_token%}
+                                        <select id="org" name="parameter_list">
+                                            <option value="" selected="selected">---SELECT Vergleichsparameter---
+                                            </option>
+                                            {% for vglparameter in parameter %}
+                                            <option name="DropDown" value="{{vglparameter}}">
+                                                {{vglparameter}}
+                                            </option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                    -->
                             </div>
-                            <div class="row">
-                                <table id='tb2' style="width:100%; border-collapse: collapse;" class="table-bordered">
-                                    {%for i in auswertung%}
-                                    <thead>
-                                    <th>{{i.name}}</th>
-                                    </thead>
-                                    <tbody id='tb3' class="table-striped">
-                                    <tr>
-                                        <td><p>avg</p>{{i.avg}}</td>
-                                        <td><p>max</p>{{i.max}}</td>
-                                        <td><p>min</p>{{i.min}}</td>
-                                    </tr>
-                                    {%endfor%}
-                                    </tbody>
-                                </table>
 
+                            <div class="col-md">
+                                <div class="col">
+                                    <h4>Table:</h4>
+                                    <!--
+                                    <div class="row">
+                                        <table id='tb1' style="width:100%; border-collapse: collapse;"
+                                               class="table-bordered">
+                                            <tbody id='tb' class="table-striped">
+                                            {%for data in value%}
+                                            <tr>
+                                                {% for x in data %}
+                                                <td>{{ x }}</td>
+                                                {% endfor %}
+                                            </tr>
+                                            {%endfor%}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                </div>-->
+                                <div class="row">
+                                    {% autoescape off %}
+                                        {{tableplot}}
+                                    {% endautoescape %}
+                                </div>
+                                <div class="row">
+                                    <a href="{% url 'csv-auswertung' value=pk %}">Auswertung</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -67,5 +62,6 @@
             </div>
         </div>
     </div>
-</body>
-{% endblock content %}
+    </div>
+    </body>
+    {% endblock content %}

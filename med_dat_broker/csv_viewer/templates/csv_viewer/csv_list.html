@@ -2,15 +2,20 @@
 {% block content %}
 <body>
 
-    <div class="jumbotron jumbotron-fluid" type="content">
-        <h2 class="mx-auto">CSV- Einträge</h2>
-
-        {% for dL in dataLists%} <hr class="my-4">
-        <h5 class="display-4" >{{dL.f_uuid}}</h5>
-        <a href="{% url 'csv-detail' value=dL.f_uuid %}">detail Ansicht</a>
-        {% endfor %}
+<div class="jumbotron jumbotron-fluid" type="content">
+    <h2 class="mx-auto">CSV- Einträge</h2>
+    <hr class="my-4">
+    <div >
+        <ul >
+            {%for dL in dataLists%}
+            <hr class="my-4">
+            <a href="{% url 'csv-detail' value=dL.f_uuid %}" class="display-4">{{dL.f_name}}</a>
+            {%endfor%}
+        </ul>
     </div>
-    <a href="{% url 'contact_upload'%}"> upload csv</a>
+
+</div>
+<a href="{% url 'contact_upload'%}"> upload csv</a>
 
 </body>
 {% endblock content %}

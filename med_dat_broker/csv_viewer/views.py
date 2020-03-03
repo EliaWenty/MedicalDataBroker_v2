@@ -1,24 +1,24 @@
-import pdb
+import csv
+import io
+import math
+import time
+from random import randint
 
-from django.shortcuts import render, get_object_or_404
-import csv, io
+import numpy as np
+import plotly.figure_factory as ff
 from django.contrib import messages
 from django.contrib.auth.decorators import permission_required
-from django.http import HttpResponse
-from random import randint
-import time
-
-
-
-from selenium.webdriver.support.select import Select
-
+from django.shortcuts import render, get_object_or_404
+from plotly.offline import plot
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import csv
-from tkinter import *
+import re
 
+import matplotlib.pyplot as plt
+
+from csv_viewer.forms import CSVForm
 from csv_viewer.models import csvModel, csvFileModel
 
 vglparameter = [
@@ -32,13 +32,18 @@ vglparameter = [
 
 
 def home(request):
-    csv_files = csvFileModel.objects.values('f_uuid')
-    csv_name = csvFileModel.objects.values('f_name')
+    # csv_files = csvFileModel.objects.values('f_uuid')
+    # csv_name = csvFileModel.objects.values('f_name')
+    csvdict = csvFileModel.objects.all()
+
+    # for x in csv_files:
+    # csvdict[csv_name[x]]=csv_files[x]
+    # print(csvdict)
+
     # data =csvModel.pk
     # print('printhome'+data)
     context = {
-        'dataLists': csv_files,
-        'names': csv_name,
+        'dataLists': csvdict,
         # 'data':data
     }
     return render(request, 'csv_viewer/csv_list.html', context)
@@ -55,6 +60,7 @@ def pathChange(self):
 
 # csv list Ansicht Ausgabe der Daten im CsvModel
 def detail(request, value):
+    pk = value
     model = get_object_or_404(csvFileModel, f_uuid=value)
     lastrow = model.f_lasttRow
     firstRow = model.f_firstRow
@@ -71,13 +77,12 @@ def detail(request, value):
         list = csvmodel.rowvalues()
         data.append(list[:len(listLen)])
 
-
-    #dropdown selected ITEM
+    # dropdown selected ITEM
     # is_param = 'selectedparameter' in request.POST and request.POST['selectedparameter']
     # obj= Select(is_param)
     # obj.select_by_index()
     # value = request.POST['parameter']
-    #selected_para = request.POST.get('parameter_list')
+    # selected_para = request.POST.get('parameter_list')
     # print(value)
 
     allColVal = []
@@ -94,45 +99,205 @@ def detail(request, value):
     for i in range(len(allColVal)):
         col = allColVal[i]
         colOut = col[2:]
-        for j in range(1,len(col)):
+        for j in range(1, len(col)):
             addAll = addAll + round(float(col[j]), 2)
-            mean = addAll / (len(col) -1)
-        durchschnitte.append({'name':col[0],
-                                  'avg': round(mean, 2),
-                                  'max': max(colOut),
-                                  'min': min(colOut)})
-        '''
-    plt.style.use('seaborn')
-    np.random.seed(1)
-    mu, sigma = 170, 8
-    x = mu + sigma * np.random.randn(10000)
+            mean = addAll / (len(col) - 1)
+        durchschnitte.append({'name': col[0],
+                              'avg': round(mean, 2),
+                              'max': max(colOut),
+                              'min': min(colOut)})
 
-    plt.hist(x, 100, normed=True, alpha=0.75)
-    plt.axis([140, 200, 0, 0.06])
+    # plt.savefig('csvauswertung.png')
+    vals = []
+    for colums in allColVal:
+        vals.append(colums[1:len(colums)])
 
-    plt.xlabel('Körpergröße')
-    plt.ylabel('Wahrscheinlichkeit')
-    plt.title('Normalverteilung von Körpergrößen')
-    plt.text(150, 0.05, r'$\mu=170,\ \sigma=8$')
-    '''
-    #plt.savefig('csvauswertung.png')
-
+    fig = make_subplots(
+        rows=1, cols=1,
+        shared_xaxes=True,
+        specs=[[{"type": "table"}]]
+    )
+    fig.add_trace(
+        go.Table(header=dict(values=model.c_parameter.split(',')),
+                 cells=dict(values=vals)),
+        row=1, col=1
+    )
+    fig.update_layout(height=1000,width=1000)
+    plot5 = plot(fig, output_type='div')
     context = {
         'value': data,
-        'parameter':model.c_parameter.split(','),
-        'auswertung': durchschnitte
+        'parameter': model.c_parameter.split(','),
+        'auswertung': durchschnitte,
+        'pk': pk,
+        'tableplot':plot5
     }
     return render(request, 'csv_viewer/home.html', context)
 
-def selectParam(request,value):
+'''
+class norm1:
+    def __init__(self, a1, b1, c1):
+        self.a1 = a1
+        self.b1 = b1
+        self.c1 = c1
+
+    def dist_curve(self):
+        plt.plot(self.c1, 1 / (self.b1 * np.sqrt(2 * np.pi)) *
+                 np.exp(- (self.c1 - self.a1) ** 2 / (2 * self.b1 ** 2)), linewidth=2, color='y')
+        plt.show()
+'''
+
+
+def auswertung(request, value):
     model = get_object_or_404(csvFileModel, f_uuid=value)
-    select_param= model.values_list('c_parameter', flat=True)
-    param = request.POST.get('parameter_list')
-    print('TRIGGER')
+    lastrow = model.f_lasttRow
+    firstRow = model.f_firstRow
+    listLen = []
+    listFirstRow = model.c_parameter.split(',')
+    for i in range(len(listFirstRow)):
+        if listFirstRow[i] != ' 0':
+            listLen.append(i)
+
+    data = []
+    list = []
+    for i in range(firstRow, lastrow):
+        csvmodel = get_object_or_404(csvModel, c_uuid=i)
+        list = csvmodel.rowvalues()
+        data.append(list[:len(listLen)])
+
+    allColVal = []
+    for column in range(len(data[0])):
+        columnVal = []
+        for row in range(len(data)):
+            rowVal = data[row]
+            columnVal.append(rowVal[column])
+        allColVal.append(columnVal)
+    addAll = 0
+    durchschnitte = []
+
+    for i in range(len(allColVal)):
+        col = allColVal[i]
+        colOut = col[2:]
+        for j in range(1, len(col)):
+            addAll = addAll + round(float(col[j]), 2)
+            mean = addAll / (len(col) - 1)
+        durchschnitte.append({'name': col[0],
+                              'avg': round(mean, 2),
+                              'max': max(colOut),
+                              'min': min(colOut)})
+    np.random.seed(1)
+    spaltenName=[]
+    vals=[]
+    for colums in allColVal:
+        spaltenName.append(colums[0])
+        vals.append(colums[1:len(colums)])
+
+    #x = np.random.randn(1000)
+    hist_data=[]
+    for x in vals:
+        x_data=[]
+        for i in x:
+            mu = 0
+            variance = 1
+            sigma = math.sqrt(variance)
+            #arrangeddata = np.linspace(mu - float(i) * sigma, mu + float(i) * sigma, 100)
+            x_data.append(float(i))
+        hist_data.append(x_data)
+
+    group_labels=[]
+    for x in range(len(spaltenName)):
+        group_labels.append(spaltenName[x])  #name of the dataset
+
+    for x in hist_data[1]:
+        arrangeddata = np.linspace(mu - float(x) * sigma, mu + float(x) * sigma, 100)
+
+
+    #print(group_labels[1])
+    #plots=[]
+    #for datensatz in hist_data:
+    #    for name in group_labels:
+    #        a=[]
+    #        a.append(datensatz)
+    #        b=[]
+    #        b.append(name)
+    #        fig = ff.create_distplot(a, b)
+    #        fig.update_layout(title_text='Normalverteilung')
+    #        plot1 = plot(fig, output_type='div')
+    #    plots.append(plot1)
+    #fig = ff.create_distplot(hist_data, group_labels)
+    #fig.update_layout(title_text='Normalverteilung')
+    #plot2 = plot(fig, output_type='div')
+
+    x_vals=[]
+    y_vals=[]
+
+
+    for x in range(len(hist_data)):
+        x_vals.append(x)
+
+
+    #fig = ff.create_dendrogram(x_vals)
+    #fig.update_layout(title_text='data Auswertung')
+    #plot2 = plot(fig, output_type='div')
+
+    fig = go.Figure(data=[go.Table(header=dict(values=group_labels),
+                                   cells=dict(values=vals))
+                          ])
+    specs = [[{"type": "table"}]]
+    vorlage = [{"type": "scatter"}]
+    for z in range(len(hist_data)):
+        specs.append(vorlage)
+    fig= make_subplots(
+        rows=len(hist_data)+1, cols=1,
+        shared_xaxes=True,
+        specs=specs
+    )
+    fig.add_trace(
+        go.Table(header=dict(values=group_labels),
+                 cells=dict(values=vals)),
+        row=1, col=1
+    )
+    for x in range(len(hist_data)):
+        fig.add_trace(
+            go.Scatter(
+                x=x_vals,
+                y=vals[x],
+                mode="lines",
+                name=group_labels[x]
+            ),
+            row=2+x, col=1
+        )
+    fig.update_layout(height=4000,width=1000)
+    plot5 = plot(fig, output_type='div')
     context = {
-        #'selectedParam': param,
+        'value': data,
+        'parameter': model.c_parameter.split(','),
+        'auswertung': durchschnitte,
+        'plot':plot5
     }
-    return render('csv_viewer/home.html', context)
+
+    return render(request, 'csv_viewer/auswertung.html', context)
+
+
+def selectParam(request):
+    csvmodels = csvFileModel.objects.all()
+    form = CSVForm()
+
+    # csvmodel = request.POST.get('dropdown')
+    print('TRIGGER')
+    if request.method == "POST":
+        form01 = CSVForm(request.POST, request.FILES)
+        if form.is_valid():
+            preview = form01.save()
+            param = preview.widget
+
+            return render(request, 'csv_viewer/home.html', {'form': form01, 'param': param})
+
+    context = {
+        'parameter': csvmodels,
+        'form': form
+    }
+    return render(request, 'csv_viewer/home.html', context)
+
 
 # def datasource():
 #    master = Tk()
@@ -157,12 +322,24 @@ def import_csv(request):
             parameter.append(header[i])
         for row in reader:
             data.append(row)
-        context = {'Vergleichsparamter': parameter,
-                   'value': data}
+
 
         # for i in range(len(data)):
         #    dataset.append(data[i])
         # print(len(dataset))
+        fig = make_subplots(
+            rows=len(data) + 1, cols=1,
+            shared_xaxes=True,
+            specs=[[{"type": "table"}]]
+        )
+        fig.add_trace(
+            go.Table(header=dict(values=parameter),
+                     cells=dict(values=data)),
+            row=1, col=1
+        )
+        plot5 = plot(fig, output_type='div')
+        context = {'Vergleichsparamter': parameter,
+                   'value': data}
     return render(request, 'csv_viewer/home.html', context)
 
 
@@ -196,7 +373,6 @@ def contact_upload(request):
         return randint(range_start, range_end)
 
     for column in csv.reader(io_string, delimiter=',', quotechar="|"):
-        print(column)
         ranInt = random_with_N_digits(9)
         milliseconds = int(round(time.time() * 1000))
         number = int(str(ranInt) + str(milliseconds))

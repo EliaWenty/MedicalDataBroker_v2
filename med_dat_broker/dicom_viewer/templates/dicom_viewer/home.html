@@ -2,13 +2,14 @@
 {% block content %}
 <body>
 <div class="jumbotron jumbotron-fluid" type="content">
-        <h4 class="mx-auto">DICOM-Einträge</h4>
+    <h4 class="mx-auto">DICOM-Einträge</h4>
+    <ul>
         {% for dL in dataLists %}
         <hr class="my-4">
-        <h1 class="display-4">{{dL.d_uuid}}</h1>
-        <a href="{% url 'dicom-detail' value=dL.d_uuid %}">detail Ansicht</a>
+        <a href="{% url 'dicom-detail' value=dL.d_uuid %}" class="display-4">{{dL.d_sopinstanceuid}}</a>
         {% endfor %}
-    </div>
+    </ul>
+</div>
 <!--
     <div class="container">
 

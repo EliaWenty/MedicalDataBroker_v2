@@ -26,8 +26,9 @@ KAMMERFLIMMERR = 0.3
 def home(request):
     # ekgList = [f.name for f in ekgModel._meta.get_fields()]
     # print(ekgList)
+    ekgdict = ekgModel.objects.all()
     context = {
-        'dataLists': ekgModel.objects.values('e_uuid')
+        'dataLists': ekgdict
     }
     return render(request, 'ekg_viewer/home.html', context)
 
@@ -77,12 +78,14 @@ def detail(request, value):
             'channels': channels
         }
     ]
+    ekgdict = ekgModel.objects.all()
     context = {
         'list': parameter,
         'plot_div': plot_div,
         'recordname': value,
         'results': results,
-        'pk': pk
+        'pk': pk,
+        'dataLists': ekgdict
     }
     return render(request, 'ekg_viewer/ekg_detail.html', context)
 

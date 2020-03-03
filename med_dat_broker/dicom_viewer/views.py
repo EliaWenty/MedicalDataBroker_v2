@@ -97,6 +97,7 @@ def detail(request, value):
     imgdecoded = base64.b64encode(buffer).decode()
     imgStrpng = 'data:image/png;base64,{}'.format(imgdecoded)
 
+
     if 'PixelData' in dataset:
         size = str(len(dataset.PixelData)) + " bytes"
     elif 'Rows' in dataset:
@@ -107,33 +108,34 @@ def detail(request, value):
         {
             'filename': value,
             'storagetype': dataset.SOPClassUID,
-            'studydate': dataset.StudyDate,
-            'patientid': dataset.PatientID,
-            'modality': dataset.Modality,
-            'patientdisplayname': patient_display_name,
-            'rows': rows,
-            'cols': cols,
-            'size': size,
-            'pixelspacing': pixelspacing,
-            'slicelocation': slicelocation
-        }
-    ]
+                'studydate': dataset.StudyDate,
+                'patientid': dataset.PatientID,
+                'modality': dataset.Modality,
+                'patientdisplayname': patient_display_name,
+                'rows': rows,
+                'cols': cols,
+                'size': size,
+                'pixelspacing': pixelspacing,
+                'slicelocation': slicelocation
+                }
+            ]
     images = [
-        {
-            'image': imgStrpng
-        }
-    ]
+            {
+                'image' : imgStrpng
+            }
+        ]
     contrast_images = [
-    ]
+        ]
     for i in range(len(imgStrArr)):
-        contrast_images.append({'values': contrasValArr[i - 1],
-                                'pic': imgStrArr[i - 1]})
-
+        contrast_images.append({'values' : contrasValArr[i-1],
+                                'pic': imgStrArr[i-1]})
+    dicomdict = dcmModel.objects.all()
     context = {
-        'list': parameter,
-        'list_img': images,
-        'list_con_img': contrast_images
-    }
+            'list': parameter,
+            'list_img' : images,
+            'list_con_img' : contrast_images,
+            'dataLists': dicomdict
+        }
 
     return render(request, 'dicom_viewer/dicom_detail.html', context)
 

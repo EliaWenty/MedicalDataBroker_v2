@@ -1,0 +1,27 @@
+{% extends "startpage/base.html" %}
+{% block content %}
+<body>
+<h4>Auswertung</h4>
+<table id='tb2' style="width:100%; border-collapse: collapse;" class="table-bordered">
+    {%for i in auswertung%}
+    <thead>
+    <th>{{i.name}}</th>
+    </thead>
+    <tbody id='tb3' class="table-striped">
+    <tr>
+        <td><p>avg</p>{{i.avg}}</td>
+        <td><p>max</p>{{i.max}}</td>
+        <td><p>min</p>{{i.min}}</td>
+    </tr>
+    {%endfor%}
+    </tbody>
+
+    <div class="row">
+        {% autoescape off %}
+            {{plot}}
+        {% endautoescape %}
+    </div>
+</table>
+</div>
+</body>
+{% endblock content %}

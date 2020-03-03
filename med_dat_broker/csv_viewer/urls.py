@@ -10,5 +10,6 @@ urlpatterns = [
     path('/test', views.import_csv, name='import_csv'),
     path('/test',views.import_csv,name='pathChange'),
     path('/upload-csv/', views.contact_upload, name='contact_upload'),
-    path('detail/<str:value>/', views.detail, name='csv-detail')
+    path('detail/<str:value>/', views.detail, name='csv-detail'),
+    path('detail/<str:value>/auswertung/',views.auswertung, name='csv-auswertung')
 ]

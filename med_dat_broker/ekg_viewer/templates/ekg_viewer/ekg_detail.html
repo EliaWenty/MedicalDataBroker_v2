@@ -37,44 +37,49 @@
 
 {% block content %}
 <form method="POST" action="comparison/">
-{% csrf_token %}
-    {% for f in list %}
-    <div class="row">
-        <h3>EKG Signal: &nbsp;&nbsp; </h3>
-        <h3>{{f.recordname}}</h3>
-    </div>
-    <div class="row">
-        <h6>Datum:&nbsp;&nbsp; </h6>
-        <h6>{{f.datum}}</h6>
-    </div>
-    <div class="row">
-        <h6>Uhrzeit: &nbsp;&nbsp;</h6>
-        <h6>{{f.uhrzeit}}</h6>
-    </div>
-    <div class="row">
-        <h6>Number of channels:&nbsp;&nbsp; </h6>
-        <h6>{{f.channels}}</h6>
-    </div>
-    <div class="row">
-        <h6>Samplerate: &nbsp;&nbsp;</h6>
-        <h6>{{f.samplerate}}</h6>
-    </div>
-    <div class="row">
-        <h6>ADC-Gain: &nbsp;&nbsp;</h6>
-        <h6>{{f.adcgain}}</h6>
-    </div>
-    <div class="row">
-        <h6>Comments: &nbsp;&nbsp;</h6>
-        <h6>{{f.comments}}</h6>
-    </div>
-    <div class="row">
-        {% autoescape off %}
-        {{plot_div}}
-        {% endautoescape %}
-    </div>
-    <p></p>
-    {% for r in results %}
-    <p>
+    <div class="container-fluid">
+        {% csrf_token %}
+        {% for f in list %}
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <h3>EKG Signal: &nbsp;&nbsp; </h3>
+                <h3>{{f.recordname}}</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <h6>Datum:&nbsp;&nbsp; </h6>
+                <h6>{{f.datum}}</h6>
+            </div>
+        </div>
+        <div class="row">
+            <h6>Uhrzeit: &nbsp;&nbsp;</h6>
+            <h6>{{f.uhrzeit}}</h6>
+        </div>
+        <div class="row">
+            <h6>Number of channels:&nbsp;&nbsp; </h6>
+            <h6>{{f.channels}}</h6>
+        </div>
+        <div class="row">
+            <h6>Samplerate: &nbsp;&nbsp;</h6>
+            <h6>{{f.samplerate}}</h6>
+        </div>
+        <div class="row">
+            <h6>ADC-Gain: &nbsp;&nbsp;</h6>
+            <h6>{{f.adcgain}}</h6>
+        </div>
+        <div class="row">
+            <h6>Comments: &nbsp;&nbsp;</h6>
+            <h6>{{f.comments}}</h6>
+        </div>
+        <div class="row">
+            {% autoescape off %}
+            {{plot_div}}
+            {% endautoescape %}
+        </div>
+        <p></p>
+        {% for r in results %}
+        <p>
         <h4>Results for Channel {{r.channel}} </h4>
         Puls: &nbsp;&nbsp;{{r.puls}}<br/>
         Average time in seconds between R peaks: &nbsp;&nbsp;{{r.avgsec}}<br/>
@@ -85,9 +90,9 @@
         Tachykardie:&nbsp;&nbsp;{{r.tachykardie}}<br/>
         Kammerflimmern:&nbsp;&nbsp;{{r.kammerflimmern}}<br/>
         Arrythmie:&nbsp;&nbsp;{{r.arrythmie}}
-    </p>
-    {% endfor %}
-
+        </p>
+        {% endfor %}
+    </div>
     <div class="row">
         <h6>Data Download:</h6>
         <ul>
@@ -108,9 +113,28 @@
                 Press the button to start the comparison
             </p>
         </div>
-        <input type="text" name="textfield">
-        <button type="submit">start comparison</button>
+        <div class="row">
+            <div class="form-group" id="auswahl_select">
+                <div class="panel-body">
+                    <style>
+                        .form-control{
+                            height: 200px;
+                            width: 200px;
+                        }
+                    </style>
+                    <div class="box">
+                        <select multiple class="form-control" disabled>
+                            {% for dL in dataLists %}
+                            <option>{{dL.e_recordName}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+    <input type="text" name="textfield">
+    <button type="submit">start comparison</button>
     <p></p>
     {% endfor %}
 </form>
