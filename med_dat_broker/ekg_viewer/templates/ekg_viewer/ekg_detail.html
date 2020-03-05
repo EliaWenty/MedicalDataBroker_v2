@@ -41,16 +41,12 @@
         {% csrf_token %}
         {% for f in list %}
         <div class="row">
-            <div class="col-md-6 col-sm-6">
-                <h3>EKG Signal: &nbsp;&nbsp; </h3>
-                <h3>{{f.recordname}}</h3>
-            </div>
+            <h3>EKG Signal: &nbsp;&nbsp; </h3>
+            <h3>{{f.recordname}}</h3>
         </div>
         <div class="row">
-            <div class="col-md-6 col-sm-6">
-                <h6>Datum:&nbsp;&nbsp; </h6>
-                <h6>{{f.datum}}</h6>
-            </div>
+            <h6>Datum:&nbsp;&nbsp; </h6>
+            <h6>{{f.datum}}</h6>
         </div>
         <div class="row">
             <h6>Uhrzeit: &nbsp;&nbsp;</h6>
@@ -77,12 +73,11 @@
             {{plot_div}}
             {% endautoescape %}
         </div>
-        <p></p>
         {% for r in results %}
         <p>
         <h4>Results for Channel {{r.channel}} </h4>
-        Puls: &nbsp;&nbsp;{{r.puls}}<br/>
-        Average time in seconds between R peaks: &nbsp;&nbsp;{{r.avgsec}}<br/>
+        Puls: &nbsp;&nbsp;{{r.puls}}bpm<br/>
+        Average time in seconds between R peaks: &nbsp;&nbsp;{{r.avgsec}}s<br/>
         Average samples between R peaks: &nbsp;&nbsp;{{r.avgsamp}}<br/>
         Average peak value:&nbsp;&nbsp;{{r.avgr}}<br/>
         <b>Predicted conditions:<br/></b>
@@ -92,24 +87,24 @@
         Arrythmie:&nbsp;&nbsp;{{r.arrythmie}}
         </p>
         {% endfor %}
-    </div>
-    <div class="row">
-        <h6>Data Download (choose format):</h6>
-        <ul>
-            <li><a href="{% url 'ekg_download' format='csv' value=pk %}">Comma-seperated values</a></li>
-            <li><a href="{% url 'ekg_download' format='ssv' value=pk %}">Semicolon-seperated values</a></li>
-            <li><a href="{% url 'ekg_download' format='tsv' value=pk %}">Tab-separated values </a></li>
-            <li><a href="{% url 'ekg_download' format='smoothed' value=pk %}">Tab-seperated values (smoothed)</a></li>
-            <li><a href="{% url 'ekg_download' format='json' value=pk %}">JSON </a></li>
-            <!--<li><a href="{% url 'ekg_download' format='xml' value=pk %}">XML </a></li>-->
-        </ul>
-    </div>
-    <p></p>
-    <h1></h1>
-    <div class="row">
+        <div class="row">
+            <h6>Data Download (choose format):</h6>
+            <ul>
+                <li><a href="{% url 'ekg_download' format='csv' value=pk %}">Comma-seperated values</a></li>
+                <li><a href="{% url 'ekg_download' format='ssv' value=pk %}">Semicolon-seperated values</a></li>
+                <li><a href="{% url 'ekg_download' format='tsv' value=pk %}">Tab-separated values </a></li>
+                <li><a href="{% url 'ekg_download' format='smoothed' value=pk %}">Tab-seperated values (smoothed)</a></li>
+                <li><a href="{% url 'ekg_download' format='json' value=pk %}">JSON </a></li>
+                <!--<li><a href="{% url 'ekg_download' format='xml' value=pk %}">XML </a></li>-->
+            </ul>
+        </div>
+        <p></p>
+        <h1></h1>
+
         <div class="row">
             <h4>Compare this file:</h4>
-            <p>Input the names of the files you want to compare this file to below and separate them with commas.<br/>
+            <p>Input the names of the files you want to compare this file to below and separate them with
+                commas.<br/>
                 Press the button to start the comparison
             </p>
             <p>Available files:</p>
@@ -118,7 +113,7 @@
             <div class="form-group" id="auswahl_select">
                 <div class="panel-body">
                     <style>
-                        .form-control{
+                        .form-control {
                             height: 200px;
                             width: 200px;
                         }
@@ -133,12 +128,12 @@
                 </div>
             </div>
         </div>
-    </div>
-    <input id="inputfield" type="text" name="textfield" required/>
-    <button id="submitbutton" type="">start comparison</button>
 
+        <div class="row">
+            <input id="inputfield" type="text" name="textfield" required/>
+            <button id="submitbutton" type="">start comparison</button>
+        </div>
     </div>
-    <p></p>
     {% endfor %}
 </form>
 {% endblock content %}
