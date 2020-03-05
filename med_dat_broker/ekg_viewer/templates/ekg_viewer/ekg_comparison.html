@@ -59,11 +59,14 @@
             <h6>{{c}}</h6>
             {% endfor %}
     </div>
+    <div class="grid-item">
+        <h3>All signals:</h3>
+        {% autoescape off %}
+        {{all_plot_div}}
+        {% endautoescape %}
+    </div>
     <div class="row">
         <h6>Data Download:</h6>
-        <!--<select>
-            <option><li><a href="{% url 'ekg_pdf_download' value=pks %}">Download page as pdf </a></li></option>
-        </select>-->
         <ul>
             <li><a href="{% url 'ekg_pdf_download' value=pks %}">Download page as pdf </a></li>
         </ul>

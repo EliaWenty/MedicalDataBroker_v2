@@ -10,6 +10,7 @@ from django.shortcuts import render, get_object_or_404
 from pydicom._storage_sopclass_uids import CTImageStorage
 from pydicom.dataset import Dataset
 import numpy as np
+from django.contrib import messages
 
 from pynetdicom import (
     AE, evt, build_role,
@@ -30,6 +31,7 @@ PACS_AE = "DCM4CHEE"
 QUERYRETRIEVELEVEL = 'IMAGE'
 LOCALARCHIVE = "_dataarchive/"
 
+
 # dicom bild in png umwandeln
 '''def dicom_to_png(request):
     dataset = dicom_retrieve(0, 0, 0, 0, '0002') #insert model fields
@@ -44,7 +46,6 @@ LOCALARCHIVE = "_dataarchive/"
     image_data = buf.read()
     return HttpResponse(image_data, content_type="image/png")
 '''
-
 
 def home(request):
     context = {
@@ -141,6 +142,10 @@ def detail(request, value):
 
 
 def dicom_comparison(request, value):
+    dcmeintraege = dcmModel.objects.values_list('d_uuid', flat=True)
+    allkeys = []
+    for e in dcmeintraege:
+        allkeys.append(str(e))
     value = value + ","
     value += request.POST.get('textfield', None)
     pks = value
@@ -148,32 +153,40 @@ def dicom_comparison(request, value):
     image_data = []
     image_arr = []
     image_OG_arr = []
-    for value in record_names:
-        dcmobject = get_object_or_404(dcmModel, pk=value)
-        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid,
-                                 dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
-        pxarr = dataset.pixel_array
-        while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
-        plt.imshow(pxarr, cmap=plt.cm.bone)
-        # plt.show()
-        fig = plt.gcf()
-        buf = io.BytesIO()
-        fig.savefig(buf, format='jpg')
-        buf.seek(0)
-        image_data = buf.read()
-        img = Image.open(io.BytesIO(image_data))
-        # img.save("_dataarchive/0002.jpg", "JPEG")
-        image_arr.append(np.array(img))
-        image_OG_arr.append(np.array(img))
-        # iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
+    if(request.POST.get('textfield', None) != "demo"):
+        for value in record_names:
+            if value not in allkeys:
+                return render(request, 'dicom_viewer/errorpage.html')
+            dcmobject = get_object_or_404(dcmModel, pk=value)
+            dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
+            pxarr = dataset.pixel_array
+            while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
+            plt.imshow(pxarr, cmap=plt.cm.bone)
+            # plt.show()
+            fig = plt.gcf()
+            buf = io.BytesIO()
+            fig.savefig(buf, format='jpg')
+            buf.seek(0)
+            image_data = buf.read()
+            img = Image.open(io.BytesIO(image_data))
+            #img.save("_dataarchive/0002.jpg", "JPEG")
+            image_arr.append(np.array(img))
+            image_OG_arr.append(np.array(img))
+            #iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
 
-    # pathDiff = "_dataarchive/diff.png"
-    # path1 = "_dataarchive/0002.png"
-    path2 = "_dataarchive/0003.jpg"
-    image1OG = image_OG_arr[0]
-    # image2OG = image_arr[1]
-    image1 = image_arr[0]
-    image2 = image_arr[1]
+            #pathDiff = "_dataarchive/diff.png"
+            #path1 = "_dataarchive/0002.png"
+            path2 = "_dataarchive/0003.jpg"
+
+        image1OG = image_OG_arr[0]
+        image1 = image_arr[0]
+        image2 = image_arr[1]
+
+    else:
+        messages.success(request, f"demo started")
+        image1OG = cv2.imread("_dataarchive/0002.jpg")
+        image1 = cv2.imread("_dataarchive/0002.jpg")
+        image2 = cv2.imread("_dataarchive/0003.jpg")
 
     img1Grey = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
     img2Grey = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
@@ -274,8 +287,7 @@ def dicom_comparison(request, value):
 def dicom_download(request, value, format='png'):
     if format == 'png':
         dcmobject = get_object_or_404(dcmModel, pk=value)
-        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid,
-                                 dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
+        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
         rows = dataset.get('Rows', "(missing)")
         cols = dataset.get('Columns', "(missing)")
         pxarr = dataset.pixel_array
@@ -293,6 +305,7 @@ def dicom_download(request, value, format='png'):
         return response
     else:
         return HttpResponse("Format not supported!", content_type="text/plain")
+
 
 
 def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
@@ -375,39 +388,42 @@ def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
             print('Association rejected, aborted or never connected')
     return dataset
 
-
 def dicom_pdf(request, value):
     pks = value
     record_names = value.split(",")
     image_data = []
     image_arr = []
     image_OG_arr = []
-    for value in record_names:
-        dcmobject = get_object_or_404(dcmModel, pk=value)
-        dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid,
-                                 dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
-        pxarr = dataset.pixel_array
-        while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
-        plt.imshow(pxarr, cmap=plt.cm.bone)
-        # plt.show()
-        fig = plt.gcf()
-        buf = io.BytesIO()
-        fig.savefig(buf, format='jpg')
-        buf.seek(0)
-        image_data = buf.read()
-        img = Image.open(io.BytesIO(image_data))
-        # img.save("_dataarchive/0002.jpg", "JPEG")
-        image_arr.append(np.array(img))
-        image_OG_arr.append(np.array(img))
-        # iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
+    if "demo" not in record_names:
+        for value in record_names:
+            dcmobject = get_object_or_404(dcmModel, pk=value)
+            dataset = dicom_retrieve(dcmobject.d_patientuid, dcmobject.d_studyuid, dcmobject.d_seriesuid, dcmobject.d_imageuid, dcmobject.d_sopinstanceuid)
+            pxarr = dataset.pixel_array
+            while len(pxarr.shape) > 2: pxarr = pxarr[int(pxarr.shape[0] / 2)]
+            plt.imshow(pxarr, cmap=plt.cm.bone)
+            # plt.show()
+            fig = plt.gcf()
+            buf = io.BytesIO()
+            fig.savefig(buf, format='jpg')
+            buf.seek(0)
+            image_data = buf.read()
+            img = Image.open(io.BytesIO(image_data))
+            #img.save("_dataarchive/0002.jpg", "JPEG")
+            image_arr.append(np.array(img))
+            image_OG_arr.append(np.array(img))
+            #iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
 
-    # pathDiff = "_dataarchive/diff.png"
-    # path1 = "_dataarchive/0002.png"
-    path2 = "_dataarchive/0003.jpg"
-    image1OG = image_OG_arr[0]
-    # image2OG = image_arr[1]
-    image1 = image_arr[0]
-    image2 = image_arr[1]
+            #pathDiff = "_dataarchive/diff.png"
+            #path1 = "_dataarchive/0002.png"
+        path2 = "_dataarchive/0003.jpg"
+        image1OG = image_OG_arr[0]
+        #image2OG = image_arr[1]
+        image1 = image_arr[0]
+        image2 = image_arr[1]
+    else:
+        image1OG = cv2.imread("_dataarchive/0002.jpg")
+        image1 = cv2.imread("_dataarchive/0002.jpg")
+        image2 = cv2.imread("_dataarchive/0003.jpg")
 
     img1Grey = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
     img2Grey = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)

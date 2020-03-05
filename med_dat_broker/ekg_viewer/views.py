@@ -91,6 +91,10 @@ def detail(request, value):
 
 
 def ekg_comparison(request, value):
+    ekgeintraege = ekgModel.objects.values_list('e_uuid', flat=True)
+    allkeys = []
+    for e in ekgeintraege:
+        allkeys.append(str(e))
     value = value + ","
     value += request.POST.get('textfield', None)
     pks = value
@@ -106,7 +110,10 @@ def ekg_comparison(request, value):
     tachychannels_flip = {}
     bradychannels_flip = {}
     flimmerchannels_flip = {}
+    all_traces = []
     for value in uuids:
+        if value not in allkeys:
+            return render(request, 'ekg_viewer/errorpage.html')
         if value in last5ekgs:  # schauen ob record noch in der cache ist
             print("used record from cache")
             record = last5ekgs[value]
@@ -126,7 +133,6 @@ def ekg_comparison(request, value):
         results = []
         for i in range(len(signal)):  # x values erstellen
             x_values.append(i)
-
         for i in range(len(signal)):  # y_values aus signal entpacken
             y_values.append(signal[i])
         channels = len(y_values[0])
@@ -135,6 +141,7 @@ def ekg_comparison(request, value):
             for j in range(len(y_values)):
                 y_y_values.append(y_values[j][c])
             traces.append(go.Scatter(x=x_values, y=y_y_values, mode='lines', name='channel ' + str(c)))
+            all_traces.append(go.Scatter(x=x_values, y=y_y_values, mode='lines', name='Record '+value+' channel ' + str(c)))
             d = process_data(y_y_values, header.fs, c)
             results.append(d)
             if c in puls_progression:
@@ -173,6 +180,7 @@ def ekg_comparison(request, value):
             'plot_div': plot_div,
             'results': results
         })
+    all_plot_div = plot(all_traces, output_type='div')
     for c in puls_progression:
         puls_progression_flip[puls_progression[c]] = c
     for c in tachychannels:
@@ -190,7 +198,8 @@ def ekg_comparison(request, value):
         'tachychannels': tachychannels_flip,
         'bradychannels': bradychannels_flip,
         'flimmerchannels': flimmerchannels_flip,
-        'pks': pks
+        'pks': pks,
+        'all_plot_div': all_plot_div
     }
     return render(request, 'ekg_viewer/ekg_comparison.html', context)
 
@@ -264,10 +273,10 @@ def process_data(y_values, samplerate, channel):
         "tachykardie": 'false',
         "kammerflimmern": 'false',
         "arrythmie": 'false',
-        "avgsamp": avgsamp,
-        "avgsec": avgsec,
-        "puls": puls,
-        "avgr": avgr
+        "avgsamp": round(avgsamp, 4),
+        "avgsec": round(avgsec, 4),
+        "puls": round(puls, 2),
+        "avgr": round(avgr, 4)
     }
     if puls > 100:
         results["tachykardie"] = 'true'
