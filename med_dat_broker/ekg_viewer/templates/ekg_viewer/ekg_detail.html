@@ -54,10 +54,10 @@
         <div class="row">
             <h6>Data Download (choose format):</h6>
             <ul>
-                <li><a href="{% url 'ekg_download' format='csv' value=pk %}">Comma-seperated values</a></li>
-                <li><a href="{% url 'ekg_download' format='ssv' value=pk %}">Semicolon-seperated values</a></li>
+                <li><a href="{% url 'ekg_download' format='csv' value=pk %}">Comma-separated values</a></li>
+                <li><a href="{% url 'ekg_download' format='ssv' value=pk %}">Semicolon-separated values</a></li>
                 <li><a href="{% url 'ekg_download' format='tsv' value=pk %}">Tab-separated values </a></li>
-                <li><a href="{% url 'ekg_download' format='smoothed' value=pk %}">Tab-seperated values (smoothed)</a></li>
+                <li><a href="{% url 'ekg_download' format='smoothed' value=pk %}">Tab-separated values (smoothed)</a></li>
                 <li><a href="{% url 'ekg_download' format='json' value=pk %}">JSON </a></li>
                 <!--<li><a href="{% url 'ekg_download' format='xml' value=pk %}">XML </a></li>-->
             </ul>
@@ -85,7 +85,7 @@
                     <div class="box">
                         <select multiple class="form-control" disabled>
                             {% for dL in dataLists %}
-                            <option>{{dL.e_recordName}}</option>
+                            <option>{{dL.e_uuid}}</option>
                             {% endfor %}
                         </select>
                     </div>

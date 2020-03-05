@@ -412,7 +412,7 @@ def dicom_pdf(request, value):
             image_arr.append(np.array(img))
             image_OG_arr.append(np.array(img))
             #iks.append(cv2.imdecode(np.fromstring(img, np.uint8), 0))
-
+            plt.close()
             #pathDiff = "_dataarchive/diff.png"
             #path1 = "_dataarchive/0002.png"
         path2 = "_dataarchive/0003.jpg"
