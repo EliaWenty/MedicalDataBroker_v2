@@ -26,100 +26,98 @@
                 </div>
             </div>
             <div class="col-md">
-                <div class="col">
 
-                    <style>
+                <style>
 
-                        {
-                            box-sizing: border-box
-                        ;
-                        }
+                    {
+                        box-sizing: border-box
+                    ;
+                    }
 
-                        .img-zoom-container {
-                            position: relative;
-                        }
+                    .img-zoom-container {
+                        position: relative;
+                    }
 
-                        .img-zoom-lens {
-                            position: absolute;
-                            border: 1px solid #d4d4d4;
-                            /*set the size of the lens:*/
-                            width: 40px;
-                            height: 40px;
-                        }
+                    .img-zoom-lens {
+                        position: absolute;
+                        border: 1px solid #d4d4d4;
+                        /*set the size of the lens:*/
+                        width: 40px;
+                        height: 40px;
+                    }
 
-                        .img-zoom-result {
-                            border: 1px solid #d4d4d4;
-                            /*set the size of the result div:*/
-                            width: 300px;
-                            height: 300px;
-                        }
+                    .img-zoom-result {
+                        border: 1px solid #d4d4d4;
+                        /*set the size of the result div:*/
+                        width: 300px;
+                        height: 300px;
+                    }
 
-                        .slider {
-                            -webkit-appearance: none;
-                            width: 100%;
-                            height: 15px;
-                            border-radius: 5px;
-                            background: #d3d3d3;
-                            outline: none;
-                            -webkit-transition: .2s;
-                            transition: opacity .2s;
-                        }
+                    .slider {
+                        -webkit-appearance: none;
+                        width: 100%;
+                        height: 15px;
+                        border-radius: 5px;
+                        background: #d3d3d3;
+                        outline: none;
+                        -webkit-transition: .2s;
+                        transition: opacity .2s;
+                    }
 
-                        .slider::-webkit-slider-thumb {
-                            -webkit-appearance: none;
-                            appearance: none;
-                            width: 25px;
-                            height: 25px;
-                            border-radius: 50%;
-                            background: #b52b40;
-                            cursor: pointer;
-                        }
+                    .slider::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        background: #b52b40;
+                        cursor: pointer;
+                    }
 
-                        .slider::-moz-range-thumb {
-                            width: 25px;
-                            height: 25px;
-                            border-radius: 50%;
-                            background: #4CAF50;
-                            cursor: pointer;
-                        }
+                    .slider::-moz-range-thumb {
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        background: #4CAF50;
+                        cursor: pointer;
+                    }
 
-                        .range {
-                            -webkit-appearance: none;
-                            width: 100%;
-                            height: 15px;
-                            border-radius: 5px;
-                            background: #d3d3d3;
-                            outline: none;
-                            -webkit-transition: .2s;
-                            transition: opacity .2s;
-                        }
+                    .range {
+                        -webkit-appearance: none;
+                        width: 100%;
+                        height: 15px;
+                        border-radius: 5px;
+                        background: #d3d3d3;
+                        outline: none;
+                        -webkit-transition: .2s;
+                        transition: opacity .2s;
+                    }
 
-                        .range::-webkit-slider-thumb {
-                            -webkit-appearance: none;
-                            appearance: none;
-                            width: 25px;
-                            height: 25px;
-                            border-radius: 50%;
-                            background: #b52b40;
-                            cursor: pointer;
-                        }
+                    .range::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        appearance: none;
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        background: #b52b40;
+                        cursor: pointer;
+                    }
 
-                        .range::-moz-range-thumb {
-                            width: 25px;
-                            height: 25px;
-                            border-radius: 50%;
-                            background: #4CAF50;
-                            cursor: pointer;
-                        }
+                    .range::-moz-range-thumb {
+                        width: 25px;
+                        height: 25px;
+                        border-radius: 50%;
+                        background: #4CAF50;
+                        cursor: pointer;
+                    }
 
-                        #img1{
-                            filter: grayscale(100%);
-                        }
+                    #img1 {
+                        filter: grayscale(100%);
+                    }
 
-                    </style>
+                </style>
 
 
-                </div>
                 {% for i in list_img %}
                 <body onload="load();">
                 <!--<span>Fired event:</span> <b><span id="label1">""</span></b><br/><br/>-->
@@ -137,7 +135,8 @@
                     <div class="contrastWrap">
                         <div class="brightnessWrap">
                             <div class="greyscaleWrap">
-                                <img class="image" id="img1" src="{{i.image}}" style="width: 700px;" filter="url(contrast)">
+                                <img class="image" id="img1" src="{{i.image}}" style="width: 700px;"
+                                     filter="url(contrast)">
                             </div>
                         </div>
                     </div>
@@ -266,13 +265,36 @@
         </ul>
     </div>
     {% endfor %}
+    <div class="form-group" id="auswahl_select">
+        <div class="panel-body">
+            <style>
+                .form-group {
+                    height: 200px;
+                    width: 200px;
+                }
+                .form-control{
+                    height: 200px;
+                    width: 200px;
+                }
+            </style>
+            <div class="box">
+                <select multiple class="form-control" disabled>
+                    {% for dL in dataLists %}
+                    <option>{{dL.d_uuid}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <h4>Compare this file:</h4>
         <p>Input the names of the files you want to compare it to below and separate them with commas.</p>
         <p>Press the button to start the comparison</p>
+
+    </div>
+    <div class="row">
         <input type="text" name="textfield">
         <button type="submit">start comparison</button>
-    </div>
 
     </div>
     </div>

@@ -48,7 +48,7 @@ LOCALARCHIVE = "_dataarchive/"
 
 def home(request):
     context = {
-        'dataLists': dcmModel.objects.values('d_uuid')
+        'dataLists': dcmModel.objects.all()
     }
     return render(request, 'dicom_viewer/home.html', context)
 
