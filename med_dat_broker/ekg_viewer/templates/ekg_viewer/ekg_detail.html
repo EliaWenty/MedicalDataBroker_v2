@@ -1,40 +1,4 @@
 {% extends "startpage/base.html" %}
-<!--
-<body>
-    <div class="container">
-      <div class="page-header">
-        <h1>EKG</h1>
-          <div class="container">
-            <div class="row">
-              <div class="col col-lg" >
-                  <div class="content-section">
-                      <h4>Informationen</h4>
-                      <div class="col">
-                          <label for="customRange1">Herzfrequenz</label>
-                          <textarea>0</textarea>
-                          <input type="range" class="custom-range" id="customRange1">
-                      </div>
-                  </div>
-              </div>
-                <div class="col-md">
-                  <div class="col" >
-                    <h4>EKG- Signal</h4>
-                      <div class="row">
-                          {% for f in list %}
-                            <p>Image: <img src="{% url 'ekg-to-png' pk=f.recordname %}"></p>
-                          {% endfor %}
-                      </div>
-                  </div>
-              </div>
-            </div>
-            </div>
-          </div>
-      </div>
-    </div>
-
-</body>-->
-
-
 {% block content %}
 <form method="POST" action="comparison/">
     <div class="container-fluid">
