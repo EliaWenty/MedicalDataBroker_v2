@@ -319,7 +319,6 @@ def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
             """Handle a C-STORE request event."""
             ds = event.dataset
             context = event.context
-
             # Add the DICOM File Meta Information
             meta = Dataset()
             meta.MediaStorageSOPClassUID = ds.SOPClassUID
