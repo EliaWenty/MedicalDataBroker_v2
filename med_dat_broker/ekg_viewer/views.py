@@ -21,6 +21,8 @@ last5ekgs = {}
 RTOLERANCE = 0.07
 ARRYTHMIETOLERANZ = 0.4
 KAMMERFLIMMERR = 0.3
+TACHYTHRESH = 100
+BRADYTHRESH = 60
 
 
 def home(request):
@@ -278,9 +280,9 @@ def process_data(y_values, samplerate, channel):
         "puls": round(puls, 2),
         "avgr": round(avgr, 4)
     }
-    if puls > 100:
+    if puls > TACHYTHRESH:
         results["tachykardie"] = 'true'
-    if puls < 60:
+    if puls < BRADYTHRESH:
         results["bradykardie"] = 'true'
     interval = secondsbetweenr[0]
     secondswofirst = secondsbetweenr
