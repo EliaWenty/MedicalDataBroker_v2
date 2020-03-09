@@ -241,7 +241,7 @@ def rowToXML(row):
 
 def toXML(df):
     # Full example see: https://stackoverflow.com/questions/47157536/converting-pandas-dataframe-to-xml?rq=1
-    return '\n'.join(df.apply(rowToXML, axis=1))
+    return "<?xml version=\"1.0\" ?>\n<values>\n"+'\n'.join(df.apply(rowToXML, axis=1))+"\n</values>"
 
 
 def about(request):
