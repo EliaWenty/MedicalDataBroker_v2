@@ -23,7 +23,7 @@ ARRYTHMIETOLERANZ = 0.4
 KAMMERFLIMMERR = 0.3
 TACHYTHRESH = 100
 BRADYTHRESH = 60
-
+DOPPELEINTRAGTOLERANZ = 0.3
 
 def home(request):
     # ekgList = [f.name for f in ekgModel._meta.get_fields()]
@@ -261,7 +261,7 @@ def process_data(y_values, samplerate, channel):
     for value in y_values:
         i = i+1
         if value > rval*RTOLERANCE:
-            if i > samplerate*0.3:
+            if i > samplerate*DOPPELEINTRAGTOLERANZ:
                 rvals.append(value)
                 samplesbetweenr.append(i)
                 secondsbetweenr.append(i/samplerate)
