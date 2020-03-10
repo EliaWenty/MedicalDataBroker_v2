@@ -107,7 +107,7 @@ def detail(request, value):
         size = "(missing)"
     parameter = [
         {
-            'filename': value,
+            'filename': dcmobject.d_sopinstanceuid,
             'storagetype': dataset.SOPClassUID,
                 'studydate': dataset.StudyDate,
                 'patientid': dataset.PatientID,

@@ -269,7 +269,7 @@
 
         <div class="row">
             <h4>Compare this file:</h4>
-            <p>Input the name of the file you want to compare this file to below.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+            <p>Input the number of the file you want to compare this file to below.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
                 Press the button to start the comparison
             </p>
 
@@ -288,13 +288,13 @@
 
                         .form-control {
                             height: 200px;
-                            width: 200px;
+                            width: 750px;
                         }
                     </style>
                     <div class="box">
                         <select multiple class="form-control" disabled>
                             {% for dL in dataLists %}
-                            <option>{{dL.d_uuid}}</option>
+                            <option>{{dL.d_uuid}} - DICOM {{dL.d_sopinstanceuid}}</option>
                             {% endfor %}
                         </select>
                     </div>
