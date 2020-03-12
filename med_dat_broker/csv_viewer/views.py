@@ -31,6 +31,9 @@ vglparameter = [
 ]
 
 
+def hasdigit(inputString):
+    return any(char.isalpha() for char in inputString)
+
 def home(request):
     # csv_files = csvFileModel.objects.values('f_uuid')
     # csv_name = csvFileModel.objects.values('f_name')
@@ -96,11 +99,16 @@ def detail(request, value):
 
     durchschnitte = []
 
+
+
     for i in range(len(allColVal)):
         col = allColVal[i]
         colOut = col[2:]
         for j in range(1, len(col)):
-            addAll = addAll + round(float(col[j]), 2)
+            if hasdigit(col[j]) == False:
+                addAll = addAll + round(float(col[j]), 2)
+
+
             mean = addAll / (len(col) - 1)
         durchschnitte.append({'name': col[0],
                               'avg': round(mean, 2),
@@ -178,8 +186,9 @@ def auswertung(request, value):
         col = allColVal[i]
         colOut = col[2:]
         for j in range(1, len(col)):
-            addAll = addAll + round(float(col[j]), 2)
-            mean = addAll / (len(col) - 1)
+            if hasdigit(col[j]) == False:
+                addAll = addAll + round(float(col[j]), 2)
+                mean = addAll / (len(col) - 1)
         durchschnitte.append({'name': col[0],
                               'avg': round(mean, 2),
                               'max': max(colOut),
@@ -200,7 +209,8 @@ def auswertung(request, value):
             variance = 1
             sigma = math.sqrt(variance)
             #arrangeddata = np.linspace(mu - float(i) * sigma, mu + float(i) * sigma, 100)
-            x_data.append(float(i))
+            if hasdigit(i) == False:
+                x_data.append(float(i))
         hist_data.append(x_data)
 
     group_labels=[]
@@ -429,3 +439,4 @@ def contact_upload(request):
     )
     context = {}
     return render(request, template, context)
+
