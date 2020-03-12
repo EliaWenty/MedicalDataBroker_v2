@@ -58,8 +58,8 @@
                 <li><a href="{% url 'ekg_download' format='ssv' value=pk %}">Semicolon-separated values</a></li>
                 <li><a href="{% url 'ekg_download' format='tsv' value=pk %}">Tab-separated values </a></li>
                 <li><a href="{% url 'ekg_download' format='smoothed' value=pk %}">Tab-separated values (smoothed)</a></li>
-                <li><a href="{% url 'ekg_download' format='json' value=pk %}">JSON </a></li>
-                <!--<li><a href="{% url 'ekg_download' format='xml' value=pk %}">XML </a></li>-->
+                <li><a href="{% url 'ekg_download' format='json' value=pk %}">JSON</a></li>
+                <li><a href="{% url 'ekg_download' format='xml' value=pk %}">XML</a></li>
             </ul>
         </div>
         <p></p>
@@ -67,7 +67,7 @@
 
         <div class="row">
             <h4>Compare this file:</h4>
-            <p>Input the names of the files you want to compare this file to below and separate them with
+            <p>Input the numbers of the files you want to compare this file to below and separate them with
                 commas.<br/>
                 Press the button to start the comparison
             </p>
@@ -79,13 +79,13 @@
                     <style>
                         .form-control {
                             height: 200px;
-                            width: 200px;
+                            width: 750px;
                         }
                     </style>
                     <div class="box">
                         <select multiple class="form-control" disabled>
                             {% for dL in dataLists %}
-                            <option>{{dL.e_uuid}}</option>
+                            <option>{{dL.e_uuid}} - EKG {{dL.e_recordName}} from {{dL.e_ppDir}}</option>
                             {% endfor %}
                         </select>
                     </div>

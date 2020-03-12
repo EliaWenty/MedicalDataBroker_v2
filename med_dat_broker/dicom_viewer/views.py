@@ -107,7 +107,7 @@ def detail(request, value):
         size = "(missing)"
     parameter = [
         {
-            'filename': value,
+            'filename': dcmobject.d_sopinstanceuid,
             'storagetype': dataset.SOPClassUID,
                 'studydate': dataset.StudyDate,
                 'patientid': dataset.PatientID,
@@ -319,7 +319,6 @@ def dicom_retrieve(patientid, studyid, seriesid, imageid, sopinstanceuid):
             """Handle a C-STORE request event."""
             ds = event.dataset
             context = event.context
-
             # Add the DICOM File Meta Information
             meta = Dataset()
             meta.MediaStorageSOPClassUID = ds.SOPClassUID

@@ -18,10 +18,12 @@ from ekg_viewer.utils import render_to_pdf
 EKGSINCACHE = 5
 MAXSAMP = 7500
 last5ekgs = {}
-RTOLERANCE = 0.07
+RTOLERANCE = 0.90
 ARRYTHMIETOLERANZ = 0.4
 KAMMERFLIMMERR = 0.3
-
+TACHYTHRESH = 100
+BRADYTHRESH = 60
+DOPPELEINTRAGTOLERANZ = 0.3
 
 def home(request):
     # ekgList = [f.name for f in ekgModel._meta.get_fields()]
@@ -241,7 +243,7 @@ def rowToXML(row):
 
 def toXML(df):
     # Full example see: https://stackoverflow.com/questions/47157536/converting-pandas-dataframe-to-xml?rq=1
-    return '\n'.join(df.apply(rowToXML, axis=1))
+    return "<?xml version=\"1.0\" ?>\n<values>\n"+'\n'.join(df.apply(rowToXML, axis=1))+"\n</values>"
 
 
 def about(request):
@@ -249,54 +251,82 @@ def about(request):
 
 
 def process_data(y_values, samplerate, channel):
-    first500vals = y_values[0:500]
-    rval = max(first500vals)
+    first1500vals = y_values[0:1500]
+    first1000vals = first1500vals[500:]
+    rval = max(first1000vals)
     rvals = []
     samplesbetweenr = []
     secondsbetweenr = []
     i = 0
     for value in y_values:
         i = i+1
-        if abs(value-rval) < RTOLERANCE or abs(rval-value) < RTOLERANCE:
-            if i > samplerate*0.07:
+        if value > rval*RTOLERANCE:
+            if i > samplerate*DOPPELEINTRAGTOLERANZ:
                 rvals.append(value)
                 samplesbetweenr.append(i)
                 secondsbetweenr.append(i/samplerate)
                 i = 0
-    avgsamp = avg(samplesbetweenr)
-    avgsec = avg(secondsbetweenr)
-    puls = 60/avgsec
-    avgr = avg(rvals)
-    results = {
-        "channel": channel,
-        "bradykardie": 'false',
-        "tachykardie": 'false',
-        "kammerflimmern": 'false',
-        "arrythmie": 'false',
-        "avgsamp": round(avgsamp, 4),
-        "avgsec": round(avgsec, 4),
-        "puls": round(puls, 2),
-        "avgr": round(avgr, 4)
-    }
-    if puls > 100:
-        results["tachykardie"] = 'true'
-    if puls < 60:
-        results["bradykardie"] = 'true'
-    interval = secondsbetweenr[0]
-    secondswofirst = secondsbetweenr
-    secondswofirst.pop(0)
-    for value in secondswofirst:
-        if value-interval > ARRYTHMIETOLERANZ or interval-value > ARRYTHMIETOLERANZ:
-            results["arrythmie"] = 'true'
-            break
-        interval = value
-    if avgr < KAMMERFLIMMERR and results["tachykardie"] == 'true':
-        results["kammerflimmern"] = 'true'
+                rval=value
+    if rvals:
+        avgsamp = avg(samplesbetweenr)
+        avgsec = avg(secondsbetweenr)
+        puls = 60/avgsec
+        avgr = avg(rvals)
+        results = {
+            "channel": channel,
+            "bradykardie": 'false',
+            "tachykardie": 'false',
+            "kammerflimmern": 'false',
+            "arrythmie": 'false',
+            "avgsamp": round(avgsamp, 4),
+            "avgsec": round(avgsec, 4),
+            "puls": round(puls, 2),
+            "avgr": round(avgr, 4)
+        }
+        if puls > TACHYTHRESH:
+            results["tachykardie"] = 'true'
+        if puls < BRADYTHRESH:
+            results["bradykardie"] = 'true'
+        interval = secondsbetweenr[0]
+        secondswofirst = secondsbetweenr
+        secondswofirst.pop(0)
+        for value in secondswofirst:
+            if value-interval > ARRYTHMIETOLERANZ or interval-value > ARRYTHMIETOLERANZ:
+                results["arrythmie"] = 'true'
+                break
+            interval = value
+        if avgr < KAMMERFLIMMERR and results["tachykardie"] == 'true':
+            results["kammerflimmern"] = 'true'
+    else:
+        avgsamp = 0
+        avgsec = 0
+        puls = 0
+        puls = 0
+        avgr = 0
+        results = {
+            "channel": channel,
+            "bradykardie": 'false',
+            "tachykardie": 'false',
+            "kammerflimmern": 'false',
+            "arrythmie": 'false',
+            "avgsamp": round(avgsamp, 4),
+            "avgsec": round(avgsec, 4),
+            "puls": round(puls, 2),
+            "avgr": round(avgr, 4)
+        }
+        results["tachykardie"] = 'false'
+        results["bradykardie"] = 'false'
+        results["arrythmie"] = 'false'
+        results["kammerflimmern"] = 'false'
     return results
 
 
 def avg(lst):
-    return sum(lst) / len(lst)
+    try:
+        return sum(lst) / len(lst)
+    except:
+        return 0
+
 
 def generate_pdf(request, value):
     pks = value
