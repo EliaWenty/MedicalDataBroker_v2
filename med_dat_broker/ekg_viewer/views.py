@@ -173,7 +173,7 @@ def ekg_comparison(request, value):
         plot_div = plot(traces, output_type='div')
 
         parameter.append({
-            'recordname': value,
+            'recordname': ekgobject.e_recordName,
             'comments': header.comments,
             'samplerate': header.fs,
             'datum': header.base_date,
@@ -412,7 +412,7 @@ def generate_pdf(request, value):
         plot_div = plot(traces, output_type='div')
 
         parameter.append({
-            'recordname': value,
+            'recordname': ekgobject.e_recordName,
             'comments': header.comments,
             'samplerate': header.fs,
             'datum': header.base_date,
