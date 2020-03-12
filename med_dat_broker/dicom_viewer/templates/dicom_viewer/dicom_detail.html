@@ -260,47 +260,47 @@
 
     <div class="row">
         <h6>Image Download:</h6>
-        <ul>
-            <li><a href="{% url 'dicom_download' format='png' value=f.filename %}">PNG </a></li>
-        </ul>
+    </div>
+    <div class="row">
+        <a href="{% url 'dicom_download' format='png' value=f.filename %}">PNG </a>
     </div>
     {% endfor %}
 
 
-        <div class="row">
-            <h4>Compare this file:</h4>
-            <p>Input the number of the file you want to compare this file to below.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
-                Press the button to start the comparison
-            </p>
+    <div class="row">
+        <h4>Compare this file:</h4>
+        <p>Input the number of the file you want to compare this file to below.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>
+            Press the button to start the comparison
+        </p>
 
-        </div>
-        <div class="row">
-            <p>Available files:</p>
-        </div>
-        <div class="row">
-            <div class="form-group" id="auswahl_select">
-                <div class="panel-body">
-                    <style>
-                        .form-group {
-                            height: 200px;
-                            width: 200px;
-                        }
+    </div>
+    <div class="row">
+        <p>Available files:</p>
+    </div>
+    <div class="row">
+        <div class="form-group" id="auswahl_select">
+            <div class="panel-body">
+                <style>
+                    .form-group {
+                        height: 200px;
+                        width: 200px;
+                    }
 
-                        .form-control {
-                            height: 200px;
-                            width: 750px;
-                        }
-                    </style>
-                    <div class="box">
-                        <select multiple class="form-control" disabled>
-                            {% for dL in dataLists %}
-                            <option>{{dL.d_uuid}} - DICOM {{dL.d_sopinstanceuid}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                    .form-control {
+                        height: 200px;
+                        width: 750px;
+                    }
+                </style>
+                <div class="box">
+                    <select multiple class="form-control" disabled>
+                        {% for dL in dataLists %}
+                        <option>{{dL.d_uuid}} - DICOM {{dL.d_sopinstanceuid}}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
         </div>
+    </div>
     <div class="row">
         <input type="text" name="textfield" required>
         <button type="submit">start comparison</button>
