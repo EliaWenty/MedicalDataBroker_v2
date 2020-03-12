@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 from csv_viewer.forms import CSVForm
 from csv_viewer.models import csvModel, csvFileModel
 
-vglparameter = [
+vlg = [
     {
         'name': 'gewicht'
     },
