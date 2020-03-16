@@ -73,6 +73,7 @@ def detail(request, value):
     fig = plt.gcf()
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
+    fig.clf()
     buf.seek(0)
     image_data = buf.read()
 
@@ -107,8 +108,8 @@ def detail(request, value):
         size = "(missing)"
     parameter = [
         {
-            'filename': dcmobject.d_sopinstanceuid,
-            'storagetype': dataset.SOPClassUID,
+                'filename': value,
+                'storagetype': dataset.SOPClassUID,
                 'studydate': dataset.StudyDate,
                 'patientid': dataset.PatientID,
                 'modality': dataset.Modality,
@@ -296,6 +297,7 @@ def dicom_download(request, value, format='png'):
         fig = plt.gcf()
         buf = io.BytesIO()
         fig.savefig(buf, format='png')
+        fig.clf()
         buf.seek(0)
         image_data = buf.read()
         response = HttpResponse(content_type='image/png')
