@@ -364,6 +364,7 @@ def generate_pdf(request, value):
         fig = plt.gcf()
         buf = io.BytesIO()
         fig.savefig(buf, format='png')
+        fig.clf()
         buf.seek(0)
         image_data = buf.read()
         img = Image.open(io.BytesIO(image_data))
